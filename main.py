@@ -12,11 +12,12 @@ from getpass import getpass
 
 
 def taskPrint(task):
+	task = task + " "
 	print(task.ljust(100, "*"))
 
 def main():
     
-	taskPrint("TASK [Start] ")
+	taskPrint("TASK [Start]")
 	parser = argparse.ArgumentParser(
 			description='Creates necessary files to run Arista AVD ansible playbook')
 	parser.add_argument('-f', '--file', help="path to Excel file")
@@ -40,8 +41,9 @@ def main():
 		"inventory": None,
 		"group_vars": {
 			fabric_name: None,
-			"TENANT_NETWORKS": None,
-			"SERVERS": None
+			fabric_name + "_FABRIC": None,
+			fabric_name + "_TENANTS_NETWORKS": None,
+			fabric_name + "_SERVERS": None
 			},
 		"requirements": None,
 	}
@@ -56,7 +58,7 @@ def main():
 		git+https://github.com/batfish/pybatfish.git
 		cvprac==1.0.4'''
 
-	taskPrint("TASK [inventory Parsing] ")
+	taskPrint("TASK [inventory Parsing]")
 	avd["inventory"] = generateInventory(file_location)
 	# avd["dc-fabric-deploy-cvp"] = generateCVPDeploymentPlaybook(file_location)
 
@@ -64,17 +66,17 @@ def main():
 	avd["group_vars"][fabric_name] = generateGroupVarsAll(file_location) 
 	# avd["group_vars"]["CVP"] = generateGroupVarsCVP(file_location, cvpadmin_password)
 
-	taskPrint("TASK [Group Vars Fabric Parsing] ")
+	taskPrint("TASK [Group Vars Fabric Parsing]")
 	avd["group_vars"][fabric_name + "_FABRIC"] = generateGroupVarsFabric(file_location)
 	# avd["group_vars"]["SPINES"] = generateGroupVarsSpines(file_location)
 	# avd["group_vars"]["L3_LEAFS"] = generateGroupVarsL3Leafs(file_location)
 	# avd["group_vars"]["L2_LEAFS"] = generateGroupVarsL2Leafs(file_location)
 
-	taskPrint("TASK [Group Vars Tenants Parsing] ")
-	avd["group_vars"]["TENANT_NETWORKS"] = generateGroupVarsTenants(file_location)
+	taskPrint("TASK [Group Vars Tenants Parsing]")
+	avd["group_vars"][fabric_name + "_TENANTS_NETWORKS"] = generateGroupVarsTenants(file_location)
 
-	taskPrint("TASK [Group Vars Servers Parsing] ")
-	avd["group_vars"]["SERVERS"] = generateGroupVarsServers(file_location)
+	taskPrint("TASK [Group Vars Servers Parsing]")
+	avd["group_vars"][fabric_name + "_SERVERS"] = generateGroupVarsServers(file_location)
 
 	#Create avd directory
 	if not os.path.exists("./.ansible"):

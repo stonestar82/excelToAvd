@@ -1,7 +1,13 @@
-import xlrd
+import xlrd, re
 from operator import *
 from generators.envirmentVariables import *
 from domain.GeneralInfo import *
+
+def convertToBoolIfNeeded(variable):
+	if type(variable) == str and re.match(r'(?i)(True|False)', variable.strip()):
+		variable = True if re.match(r'(?i)true', variable.strip()) else False
+	
+	return variable
 
 def parseGeneralInfo(inventory_file):
 	# configuration_variable_mappers = {"CVP IP Addresses": "cvp_instance_ips", "CVP Ingest Auth Key": "cvp_ingestauth_key",
@@ -16,6 +22,7 @@ def parseGeneralInfo(inventory_file):
 		gc.managementGateway:"mgmt_gateway",
 		gc.dnsServers:"name_servers", 
 		gc.ntpServers: "ntp_servers",
+		gc.ntpServersPrefer: "ntp_servers_prefer",
 		gc.adminPassword:"admin_info",
 		gc.ansiblePassword:"ansible_info"
 	}
@@ -64,9 +71,35 @@ def parseGeneralInfo(inventory_file):
 
 	# general_info["cvp_ingestauth_key"] = info["cvp_ingestauth_key"] if info["cvp_ingestauth_key"] != "" else None
 	
-	# Name Server, NTP Server 세팅
+	# Name Server 세팅
 	general_info["name_servers"] = [ip.strip() for ip in info["name_servers"].split(",") if ip != ""]
-	general_info["ntp_servers"] = [ip.strip() for ip in info["ntp_servers"].split(",") if ip != ""]
+
+	# NTP Server 세팅
+	if ne(info["ntp_servers"], "") and ne(info["mgmt_interface_vrf"], ""):
+		general_info["custom_structured_configuration_ntp"] = {
+				"local_interface" : {
+					"name": MGMT_INTERFACE,
+					"vrf": MGMT_INTERFACE_VRF
+				}
+			}
+		
+
+		ntpServers = info["ntp_servers"].split(",")
+		ntpServersPrefer = info["ntp_servers_prefer"].split(",")
+
+		ntpInfo = []
+		for i in range(len(ntpServers)):
+			ntp = {
+				"name": ntpServers[i],
+				"preferred": convertToBoolIfNeeded(ntpServersPrefer[i]),
+				"vrf": MGMT_INTERFACE_VRF
+			}
+			ntpInfo.append(ntp)			
+
+		general_info["custom_structured_configuration_ntp"]["servers"] = ntpInfo
+
+
+
 	return general_info
 
 def generateGroupVarsAll(inventory_file):

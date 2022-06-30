@@ -1,0 +1,9 @@
+---
+- name: EOS validate state
+  hosts: DC1_FABRIC
+  gather_facts: false
+  
+  tasks:
+    - name: run validate state
+      import_role:
+        name: arista.avd.eos_validate_state

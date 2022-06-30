@@ -89,12 +89,12 @@ def parseLeafInfo(inventory_file, leaf_type="L3"):
 	else:
 		return None
 
-def getServers():
-	servers = {"children": {"L3LEAFS": None, "L2_LEAFS": None}}
+def getServers(fabric_name):
+	servers = {"children": {fabric_name + "_L3LEAFS": None, fabric_name + "_L2_LEAFS": None}}
 	return servers
 
-def getTenantNetworks():
-	tn = {"children": {"L3LEAFS": None, "L2LEAFS": None}}
+def getTenantNetworks(fabric_name):
+	tn = {"children": {fabric_name + "_L3LEAFS": None, fabric_name + "_L2LEAFS": None}}
 	return tn
 
 def getFabricInventory(inventory_file, fabric_name):
@@ -111,7 +111,7 @@ def getFabricInventory(inventory_file, fabric_name):
 	fabric_inventory["vars"] = {
 		"ansible_connection": "network_cli",
 		"ansible_network_os": "eos",
-		"ansible_become": "yes",
+		"ansible_become": True,
 		"ansible_user": "ansible",
     "ansible_ssh_pass": "ansible",
 		"ansible_become_method": "enable",
@@ -159,10 +159,10 @@ def generateInventory(inventory_file):
 	# inventory["all"]["children"][fabric_name] = getFabricInventory(inventory_file)
 
 	#Add Servers
-	inventory["all"]["children"]["SERVERS"] = getServers()
+	inventory["all"]["children"][fabric_name+"_SERVERS"] = getServers(fabric_name)
 
 	#Add Tenant Networks
-	inventory["all"]["children"]["TENANT_NETWORKS"] = getTenantNetworks()
+	inventory["all"]["children"][fabric_name+"_TENANTS_NETWORKS"] = getTenantNetworks(fabric_name)
 
 	return inventory
 

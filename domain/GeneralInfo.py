@@ -13,6 +13,7 @@ class GenernalConfiguration():
     self.managementGateway = "Management Gateway"
     self.dnsServers = "DNS Servers"
     self.ntpServers = "NTP Servers"
+    self.ntpServersPrefer = "NTP Servers Prefer"
     self.underlayNetworkSummary = "Underlay Network Summary"
     self.overlayNetworkSummary = "Overlay Network Summary"
     self.vtepNetworkSummary = "VTEP Network Summary"

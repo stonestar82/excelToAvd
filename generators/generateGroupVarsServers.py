@@ -23,6 +23,7 @@ def parseServers(inventory_file):
             servers[server_name] = {}
         servers[server_name]["rack"] = server_info["Rack"]
         adapter_info = {
+            "type": server_info["Type"],
             "server_ports": [ port.strip() for port in server_info["Server Ports"].split(",") ],
             "switch_ports": [ port.strip() for port in server_info["Switch Ports"].split(",") ],
             "switches": [ switch.strip() for switch in server_info["Switches"].split(",") ],

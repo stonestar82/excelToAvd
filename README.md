@@ -1,14 +1,19 @@
 # AVD Excel Loader
 
-1. 기본 프로젝트 https://github.com/arista-netdevops-community/excel-to-avd.git
-2. 2년전 마지막 업데이트로 지금과 맞지 않음 (2022.06.28 기준)
-3. ansible 및 각 라이브러리 설치된 환경에서 실행
- - inventory.xlsx 에 항목 기입후 avdExec(alias avdExec='python3 main.py') 실행
- - excell -> inventory, ansible playbook 생성 -> ansible playbook 실행
+This script allows users to create the necessary files in order to set up and run an arista.avd ansible playbook.  The script takes values input via an Excel spreadsheet and generates the required ansible inventory and variable files.
 
+## Requirements ##
 
-# 추가 설치 라이브러리
-1. xlrd
-  - 최신버전은 xlsx 파일을 지원하지 않아 2 버전 미만으로 설치
-2. PyYAML
-  - dict 형식의 데이터를 yaml 형식으로 변경해줌
+-  Python3
+-  Python modules listed in requirements.txt file
+
+## How to execute
+
+1.  Fill out the provided spreadsheet to create your network and save.  An example is provided in the **examples** folder
+2.  Execute the script by entering the command `python main.py -f <path-to-excel-file>` 
+3.  A folder called **avd** should be generated.  Change directories to that folder with `cd avd`.
+4.  The playbook to run the arista avd module is `dc-fabric-deploy-cvp.yaml`
+5.  Make any edits to the generated playbook and other files then run the playbook by entering the command `ansible-playbook dc-fabric-deploy-cvp.yaml`
+
+## Limitations
+- There is currently no support for pre-validation or post-validation
