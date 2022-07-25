@@ -1,0 +1,30 @@
+! Leaf-03
+!
+interface Ethernet1
+   description Connection to Spine-01-Ethernet3
+   no switchport
+   ip address 172.21.3.3/24
+!
+interface Ethernet2
+   description Connection to Spine-02-Ethernet3
+   no switchport
+   ip address 172.22.3.3/24
+!
+interface Ethernet3
+   switchport mode trunk
+!
+interface Ethernet4
+   shutdown
+!
+interface Ethernet5
+   shutdown
+!
+interface Ethernet6
+   shutdown
+!
+interface Ethernet7
+   shutdown
+!
+interface Ethernet8
+   shutdown
+!

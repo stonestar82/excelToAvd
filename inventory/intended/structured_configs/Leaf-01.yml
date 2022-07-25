@@ -1,0 +1,170 @@
+router_bgp:
+  as: '65101'
+  router_id: 1.1.1.1
+  bgp_defaults:
+  - distance bgp 20 200 200
+  - no bgp default ipv4-unicast
+  - graceful-restart restart-time 300
+  - graceful-restart
+  - maximum-paths 4 ecmp 4
+  peer_groups:
+    UNDERLAY:
+      type: ipv4
+      maximum_routes: 12000
+      send_community: all
+      bgp_listen_range_prefix: 100.64.0.0/10
+      peer_filter: Leaf-Ass
+    OVERLAY:
+      type: evpn
+      update_source: Loopback0
+      bfd: true
+      ebgp_multihop: '3'
+      send_community: all
+      maximum_routes: 0
+  address_family_ipv4:
+    peer_groups:
+      UNDERLAY:
+        activate: true
+      OVERLAY:
+        activate: false
+  redistribute_routes:
+    connected:
+      route_map: RM-CONN-2-BGP
+  neighbors:
+    172.21.1.0:
+      peer_group: UNDERLAY
+      remote_as: '65000'
+      description: Spine-01_Ethernet1
+    172.21.1.2:
+      peer_group: UNDERLAY
+      remote_as: '65000'
+      description: Spine-02_Ethernet1
+    1.1.1.201:
+      peer_group: OVERLAY
+      description: Spine-01
+      remote_as: '65000'
+    1.1.1.202:
+      peer_group: OVERLAY
+      description: Spine-02
+      remote_as: '65000'
+  address_family_evpn:
+    peer_groups:
+      OVERLAY:
+        activate: true
+static_routes:
+- vrf: MGMT
+  destination_address_prefix: 0.0.0.0/0
+  gateway: 192.168.22.1
+service_routing_protocols_model: multi-agent
+ip_routing: true
+vlan_internal_order:
+  allocation: ascending
+  range:
+    beginning: 1006
+    ending: 1199
+name_server:
+  source:
+    vrf: MGMT
+  nodes:
+  - 8.8.8.8
+spanning_tree:
+  mode: none
+local_users:
+  admin:
+    privilege: 15
+    role: network-admin
+    sha512_password: $6$sbSVn6IgN2A7VIJJ$8g/z9ibMbFlO06jbpowU/PyB9kJvIgPNeSVyXjjanW8eftykpP7S32CFEdmb0nj0D8JXOKUNWe97T2wNvWSbm1
+  ansible:
+    privilege: 15
+    role: network-admin
+    sha512_password: $6$88e4YP9cN86RUUUZ$LBzKr2P.tfRkEZja4srfLK3t8TXCKx//t1LM59B6sr7AujC2HFTyKAsHZCxV/WOzHE/e7yrdlpMQxbaq/KW370
+vrfs:
+  MGMT:
+    ip_routing: false
+management_interfaces:
+  Management1:
+    description: oob_management
+    shutdown: false
+    vrf: MGMT
+    ip_address: 192.168.22.193/24
+    gateway: 192.168.22.1
+    type: oob
+management_api_http:
+  enable_vrfs:
+    MGMT: {}
+  enable_https: true
+ethernet_interfaces:
+  Ethernet1:
+    peer: Spine-01
+    peer_interface: Ethernet1
+    peer_type: spine
+    description: Connection to Spine-01-Ethernet1
+    mtu: 1500
+    type: routed
+    shutdown: false
+    ip_address: 172.21.1.1/31
+  Ethernet2:
+    peer: Spine-02
+    peer_interface: Ethernet1
+    peer_type: spine
+    description: Connection to Spine-02-Ethernet1
+    mtu: 1500
+    type: routed
+    shutdown: false
+    ip_address: 172.21.1.3/31
+  Ethernet3:
+    peer: HOST-A
+    peer_interface: Eth1
+    peer_type: server
+    description: HOST-A_Eth1
+    type: switched
+    shutdown: false
+    mode: trunk
+loopback_interfaces:
+  Loopback0:
+    description: RouterID_EVPN
+    shutdown: false
+    ip_address: 1.1.1.1/32
+  Loopback1:
+    description: VTEP_VXLAN_Tunnel_Source
+    shutdown: false
+    ip_address: 192.168.254.1/32
+prefix_lists:
+  PL-LOOPBACKS-EVPN-OVERLAY:
+    sequence_numbers:
+      10:
+        action: permit 1.1.1.0/24 eq 32
+      20:
+        action: permit 192.168.254.0/24 eq 32
+route_maps:
+  RM-CONN-2-BGP:
+    sequence_numbers:
+      10:
+        type: permit
+        match:
+        - ip address prefix-list PL-LOOPBACKS-EVPN-OVERLAY
+router_bfd:
+  multihop:
+    interval: 1200
+    min_rx: 1200
+    multiplier: 3
+ip_igmp_snooping:
+  globally_enabled: true
+ip_virtual_router_mac_address: 00:1c:73:00:dc:01
+vxlan_interface:
+  Vxlan1:
+    description: Leaf-01_VTEP
+    vxlan:
+      source_interface: Loopback1
+      udp_port: 4789
+ntp:
+  local_interface:
+    name: Management1
+    vrf: MGMT
+  servers:
+  - name: 0.fr.pool.ntp.org
+    preferred: true
+    vrf: MGMT
+  - name: 1.fr.pool.ntp.org
+    preferred: false
+    vrf: MGMT

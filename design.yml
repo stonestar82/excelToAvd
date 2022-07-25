@@ -1,0 +1,25 @@
+---
+- name: Manage Arista EOS EVPN/VXLAN Configuration
+  hosts: DC1_FABRIC
+  connection: local
+  gather_facts: false
+  collections:
+    - arista.avd
+  tasks:
+
+    - name: generate intended variables
+      import_role:
+        name: arista.avd.eos_designs
+
+    # - name: generate device intended config and documentation
+    #   import_role:
+    #     name: eos_cli_config_gen
+
+# - name: Configuration deployment with EAPI
+#   hosts: DC1_FABRIC
+#   gather_facts: false
+  
+#   tasks:
+#     - name: run EAPI
+#       import_role:
+#         name: arista.avd.eos_config_deploy_eapi

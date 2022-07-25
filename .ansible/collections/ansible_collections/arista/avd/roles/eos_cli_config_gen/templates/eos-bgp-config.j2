@@ -1,0 +1,18 @@
+{# Loopback Interfaces #}
+{% include 'eos/loopback-interfaces.j2' %}
+{# router bgp configuration #}
+{# eos - Router BGP #}
+{% if ethernet_interfaces["Ethernet1"]["peer_type"] == "l3leaf" %}{# spine #}
+{% include 'eos/router-bgp-spine.j2' %}
+ip prefix-list Loopback
+   seq 10 permit 1.1.1.0/24 eq 32
+{% else %}{# leaf #}
+!
+Leaf
+{% endif %}
+{# route-maps #}
+!
+route-map Loopback permit 10
+   match ip address prefix-list Loopback
+{# peer-filters #}
+{% include 'eos/peer-filters.j2' %}

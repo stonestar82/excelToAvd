@@ -1,0 +1,213 @@
+router_bgp:
+  as: '65000'
+  router_id: 1.1.1.201
+  bgp_defaults:
+  - no bgp default ipv4-unicast
+  - maximum-paths 4 ecmp 4
+  peer_groups:
+    UNDERLAY:
+      type: ipv4
+      maximum_routes: 12000
+      send_community: all
+      bgp_listen_range_prefix: 100.64.0.0/10
+      peer_filter: Leaf-Ass
+    OVERLAY:
+      type: evpn
+      update_source: Loopback0
+      bfd: true
+      ebgp_multihop: '3'
+      send_community: all
+      maximum_routes: 0
+      next_hop_unchanged: true
+  address_family_ipv4:
+    peer_groups:
+      UNDERLAY:
+        activate: true
+      OVERLAY:
+        activate: false
+  redistribute_routes:
+    connected:
+      route_map: RM-CONN-2-BGP
+  neighbors:
+    172.21.1.1:
+      peer_group: UNDERLAY
+      remote_as: '65101'
+      description: Leaf-01_Ethernet1
+    172.21.1.5:
+      peer_group: UNDERLAY
+      remote_as: '65102'
+      description: Leaf-02_Ethernet1
+    172.21.1.9:
+      peer_group: UNDERLAY
+      remote_as: '65103'
+      description: Leaf-03_Ethernet1
+    172.21.1.13:
+      peer_group: UNDERLAY
+      remote_as: '65104'
+      description: Leaf-04_Ethernet1
+    172.21.1.17:
+      peer_group: UNDERLAY
+      remote_as: '65105'
+      description: BL-01_Ethernet1
+    172.21.1.21:
+      peer_group: UNDERLAY
+      remote_as: '65105'
+      description: BL-02_Ethernet1
+    1.1.1.5:
+      peer_group: OVERLAY
+      description: BL-01
+      remote_as: '65105'
+    1.1.1.6:
+      peer_group: OVERLAY
+      description: BL-02
+      remote_as: '65105'
+    1.1.1.1:
+      peer_group: OVERLAY
+      description: Leaf-01
+      remote_as: '65101'
+    1.1.1.2:
+      peer_group: OVERLAY
+      description: Leaf-02
+      remote_as: '65102'
+    1.1.1.3:
+      peer_group: OVERLAY
+      description: Leaf-03
+      remote_as: '65103'
+    1.1.1.4:
+      peer_group: OVERLAY
+      description: Leaf-04
+      remote_as: '65104'
+  address_family_evpn:
+    peer_groups:
+      OVERLAY:
+        activate: true
+static_routes:
+- vrf: MGMT
+  destination_address_prefix: 0.0.0.0/0
+  gateway: 192.168.22.1
+service_routing_protocols_model: multi-agent
+ip_routing: true
+vlan_internal_order:
+  allocation: ascending
+  range:
+    beginning: 1006
+    ending: 1199
+name_server:
+  source:
+    vrf: MGMT
+  nodes:
+  - 8.8.8.8
+spanning_tree:
+  mode: none
+local_users:
+  admin:
+    privilege: 15
+    role: network-admin
+    sha512_password: $6$sbSVn6IgN2A7VIJJ$8g/z9ibMbFlO06jbpowU/PyB9kJvIgPNeSVyXjjanW8eftykpP7S32CFEdmb0nj0D8JXOKUNWe97T2wNvWSbm1
+  ansible:
+    privilege: 15
+    role: network-admin
+    sha512_password: $6$88e4YP9cN86RUUUZ$LBzKr2P.tfRkEZja4srfLK3t8TXCKx//t1LM59B6sr7AujC2HFTyKAsHZCxV/WOzHE/e7yrdlpMQxbaq/KW370
+vrfs:
+  MGMT:
+    ip_routing: false
+management_interfaces:
+  Management1:
+    description: oob_management
+    shutdown: false
+    vrf: MGMT
+    ip_address: 192.168.22.191/24
+    gateway: 192.168.22.1
+    type: oob
+management_api_http:
+  enable_vrfs:
+    MGMT: {}
+  enable_https: true
+ethernet_interfaces:
+  Ethernet1:
+    peer: Leaf-01
+    peer_interface: Ethernet1
+    peer_type: l3leaf
+    description: Connection to Leaf-01-Ethernet1
+    mtu: 1500
+    type: routed
+    shutdown: false
+    ip_address: 172.21.1.0/31
+  Ethernet2:
+    peer: Leaf-02
+    peer_interface: Ethernet1
+    peer_type: l3leaf
+    description: Connection to Leaf-02-Ethernet1
+    mtu: 1500
+    type: routed
+    shutdown: false
+    ip_address: 172.21.1.4/31
+  Ethernet3:
+    peer: Leaf-03
+    peer_interface: Ethernet1
+    peer_type: l3leaf
+    description: Connection to Leaf-03-Ethernet1
+    mtu: 1500
+    type: routed
+    shutdown: false
+    ip_address: 172.21.1.8/31
+  Ethernet4:
+    peer: Leaf-04
+    peer_interface: Ethernet1
+    peer_type: l3leaf
+    description: Connection to Leaf-04-Ethernet1
+    mtu: 1500
+    type: routed
+    shutdown: false
+    ip_address: 172.21.1.12/31
+  Ethernet5:
+    peer: BL-01
+    peer_interface: Ethernet1
+    peer_type: l3leaf
+    description: Connection to BL-01-Ethernet1
+    mtu: 1500
+    type: routed
+    shutdown: false
+    ip_address: 172.21.1.16/31
+  Ethernet6:
+    peer: BL-02
+    peer_interface: Ethernet1
+    peer_type: l3leaf
+    description: Connection to BL-02-Ethernet1
+    mtu: 1500
+    type: routed
+    shutdown: false
+    ip_address: 172.21.1.20/31
+loopback_interfaces:
+  Loopback0:
+    description: RouterID_EVPN
+    shutdown: false
+    ip_address: 1.1.1.201/32
+prefix_lists:
+  PL-LOOPBACKS-EVPN-OVERLAY:
+    sequence_numbers:
+      10:
+        action: permit 1.1.1.200/30 eq 32
+route_maps:
+  RM-CONN-2-BGP:
+    sequence_numbers:
+      10:
+        type: permit
+        match:
+        - ip address prefix-list PL-LOOPBACKS-EVPN-OVERLAY
+router_bfd:
+  multihop:
+    interval: 1200
+    min_rx: 1200
+    multiplier: 3
+ntp:
+  local_interface:
+    name: Management1
+    vrf: MGMT
+  servers:
+  - name: 0.fr.pool.ntp.org
+    preferred: true
+    vrf: MGMT
+  - name: 1.fr.pool.ntp.org
+    preferred: false
+    vrf: MGMT

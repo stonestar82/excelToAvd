@@ -1,0 +1,233 @@
+# The format of this file is documented in the dhcpd.leases(5) manual page.
+# This lease file was written by isc-dhcp-4.4.1
+
+# authoring-byte-order entry is generated, DO NOT DELETE
+authoring-byte-order little-endian;
+
+lease 192.168.22.191 {
+  starts 2 2022/07/12 03:32:09;
+  ends 2 2022/07/30 03:42:09;
+  tstp 2 2022/07/12 03:42:09;
+  cltt 2 2022/07/12 03:32:09;
+  binding state free;
+  hardware ethernet 50:fa:80:e9:68:cf;
+  uid "\001\000\340Lhp\222";
+  set vendor-class-identifier = "MSFT 5.0";
+  leaf1;
+}
+lease 192.168.22.192 {
+  starts 2 2022/07/12 07:11:00;
+  ends 2 2022/07/30 03:42:09;
+  tstp 2 2022/07/12 07:21:00;
+  cltt 2 2022/07/12 07:11:00;
+  binding state free;
+  hardware ethernet 50:b2:0b:d5:d0:c4;
+  set vendor-class-identifier = "udhcp 1.23.2";
+  leaf4;
+}
+lease 192.168.22.193 {
+  starts 2 2022/07/12 10:47:25;
+  ends 2 2022/07/30 03:42:09;
+  cltt 2 2022/07/12 10:47:25;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:f5:22:ff:a7:89;
+  uid "P\011\000l35";
+  set vendor-class-identifier = "Arista;vEOS-lab;DA875453A9AD06FF07E7E7839A686FF5";
+  spine1;
+}
+lease 192.168.22.194 {
+  starts 2 2022/07/12 07:10:44;
+  ends 2 2022/07/30 03:42:09;
+  cltt 2 2022/07/12 07:10:44;
+  binding state abandoned;
+  next binding state free;
+  hardware ethernet 50:b2:0b:d5:d0:c4;
+  rewind binding state free;
+  client-hostname "vc-ge6";
+  leaf3;
+}
+lease 192.168.22.195 {
+  starts 2 2022/07/12 07:10:47;
+  ends 2 2022/07/30 03:42:09;
+  cltt 2 2022/07/12 07:10:47;
+  binding state abandoned;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:fe:f2:79:89:88;
+  client-hostname "vc-ge6";
+  spine2;
+}
+lease 192.168.22.196 {
+  starts 2 2022/07/12 07:10:50;
+  ends 2 2022/07/30 03:42:09;
+  cltt 2 2022/07/12 07:10:50;
+  binding state abandoned;
+  next binding state free;
+  rewind binding state free;
+  client-hostname "vc-ge6";
+  leaf2;
+  hardware ethernet 50:af:75:ce:55:93;
+}
+lease 192.168.22.196 {
+  starts 2 2022/07/12 07:10:53;
+  ends 2 2022/07/30 03:42:09;
+  cltt 2 2022/07/12 07:10:53;
+  binding state abandoned;
+  next binding state free;
+  rewind binding state free;
+  client-hostname "vc-ge6";
+}
+lease 192.168.22.197 {
+  starts 2 2022/07/12 07:10:56;
+  ends 3 2022/07/13 07:10:56;
+  cltt 2 2022/07/12 07:10:56;
+  binding state abandoned;
+  next binding state free;
+  rewind binding state free;
+  client-hostname "vc-ge6";
+}
+lease 192.168.22.191 {
+  starts 2 2022/07/12 10:49:58;
+  ends 2 2022/07/12 10:59:58;
+  cltt 2 2022/07/12 10:49:58;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:09:00:01:00:00;
+  uid "P\011\000l35";
+  set vendor-class-identifier = "Arista;vEOS-lab;DA875453A9AD06FF07E7E7839A686FF5";
+}
+lease 192.168.22.191 {
+  starts 2 2022/07/12 10:52:32;
+  ends 2 2022/07/12 11:02:32;
+  cltt 2 2022/07/12 10:52:32;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:09:00:01:00:00;
+  uid "P\011\000l35";
+  set vendor-class-identifier = "Arista;vEOS-lab;DA875453A9AD06FF07E7E7839A686FF5";
+}
+lease 192.168.22.191 {
+  starts 2 2022/07/12 10:55:05;
+  ends 2 2022/07/12 11:05:05;
+  cltt 2 2022/07/12 10:55:05;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:09:00:01:00:00;
+  uid "P\011\000l35";
+  set vendor-class-identifier = "Arista;vEOS-lab;DA875453A9AD06FF07E7E7839A686FF5";
+}
+lease 192.168.22.191 {
+  starts 2 2022/07/12 10:57:38;
+  ends 2 2022/07/12 11:07:38;
+  cltt 2 2022/07/12 10:57:38;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:09:00:01:00:00;
+  uid "P\011\000l35";
+  set vendor-class-identifier = "Arista;vEOS-lab;DA875453A9AD06FF07E7E7839A686FF5";
+}
+lease 192.168.22.191 {
+  starts 2 2022/07/12 11:00:12;
+  ends 2 2022/07/12 11:10:12;
+  cltt 2 2022/07/12 11:00:12;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:09:00:01:00:00;
+  uid "P\011\000l35";
+  set vendor-class-identifier = "Arista;vEOS-lab;DA875453A9AD06FF07E7E7839A686FF5";
+}
+lease 192.168.22.191 {
+  starts 2 2022/07/12 11:02:45;
+  ends 2 2022/07/12 11:12:45;
+  cltt 2 2022/07/12 11:02:45;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:09:00:01:00:00;
+  uid "P\011\000l35";
+  set vendor-class-identifier = "Arista;vEOS-lab;DA875453A9AD06FF07E7E7839A686FF5";
+}
+lease 192.168.22.191 {
+  starts 2 2022/07/12 11:05:18;
+  ends 2 2022/07/12 11:15:18;
+  cltt 2 2022/07/12 11:05:18;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:09:00:01:00:00;
+  uid "P\011\000l35";
+  set vendor-class-identifier = "Arista;vEOS-lab;DA875453A9AD06FF07E7E7839A686FF5";
+}
+lease 192.168.22.191 {
+  starts 2 2022/07/12 11:07:51;
+  ends 2 2022/07/12 11:17:51;
+  cltt 2 2022/07/12 11:07:51;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:09:00:01:00:00;
+  uid "P\011\000l35";
+  set vendor-class-identifier = "Arista;vEOS-lab;DA875453A9AD06FF07E7E7839A686FF5";
+}
+lease 192.168.22.199 {
+  starts 2 2022/07/12 11:08:11;
+  ends 2 2022/07/12 11:18:11;
+  cltt 2 2022/07/12 11:08:11;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:69:d4:00:b3:00;
+  uid "Pi\324\000\263\001";
+  set vendor-class-identifier = "Arista;vEOS-lab;MIN5069d400";
+}
+lease 192.168.22.200 {
+  starts 2 2022/07/12 11:08:16;
+  ends 2 2022/07/12 11:18:16;
+  cltt 2 2022/07/12 11:08:16;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:c4:46:00:b0:00;
+  uid "P\304F\000\260\001";
+  set vendor-class-identifier = "Arista;vEOS-lab;MIN50c44600";
+}
+lease 192.168.22.191 {
+  starts 2 2022/07/12 11:10:25;
+  ends 2 2022/07/12 11:20:25;
+  cltt 2 2022/07/12 11:10:25;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:09:00:01:00:00;
+  uid "P\011\000l35";
+  set vendor-class-identifier = "Arista;vEOS-lab;DA875453A9AD06FF07E7E7839A686FF5";
+}
+lease 192.168.22.200 {
+  starts 2 2022/07/12 11:10:48;
+  ends 2 2022/07/12 11:20:48;
+  cltt 2 2022/07/12 11:10:48;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:c4:46:00:b0:00;
+  uid "P\304F\000\260\001";
+  set vendor-class-identifier = "Arista;vEOS-lab;MIN50c44600";
+}
+lease 192.168.22.199 {
+  starts 2 2022/07/12 11:10:54;
+  ends 2 2022/07/12 11:20:54;
+  cltt 2 2022/07/12 11:10:54;
+  binding state active;
+  next binding state free;
+  rewind binding state free;
+  hardware ethernet 50:69:d4:00:b3:00;
+  uid "Pi\324\000\263\001";
+  set vendor-class-identifier = "Arista;vEOS-lab;MIN5069d400";
+}

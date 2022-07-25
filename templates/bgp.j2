@@ -1,0 +1,30 @@
+! Leaf-01
+!
+interface Loopback0
+   description RouterID_EVPN
+   ip address 1.1.1.1/32
+!
+router bgp 65001
+   bgp asn notation asdot
+   router-id 1.1.1.1
+   no bgp default ipv4-unicast
+   timers bgp 2 6
+   maximum-paths 8 ecmp 8
+   neighbor Spine peer group
+   neighbor Spine remote-as 65000
+   neighbor Spine send-community
+   neighbor Spine maximum-routes 12000
+   neighbor 172.21.1.201 peer group Spine
+   neighbor 172.21.1.201 description Spine-01
+   neighbor 172.22.1.202 peer group Spine
+   neighbor 172.22.1.202 description Spine-02
+   redistribute connected route-map Loopback
+   !
+   address-family ipv4
+      neighbor Spine activate
+   !
+ip prefix-list Loopback
+   seq 10 permit 1.1.1.0/24 eq 32
+!
+route-map Loopback permit 10
+   match ip address prefix-list Loopback

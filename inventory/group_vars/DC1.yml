@@ -1,0 +1,32 @@
+custom_structured_configuration_ntp:
+  local_interface:
+    name: Management1
+    vrf: MGMT
+  servers:
+  - name: 0.fr.pool.ntp.org
+    preferred: true
+    vrf: MGMT
+  - name: 1.fr.pool.ntp.org
+    preferred: false
+    vrf: MGMT
+local_users:
+  admin:
+    privilege: 15
+    role: network-admin
+    sha512_password: $6$sbSVn6IgN2A7VIJJ$8g/z9ibMbFlO06jbpowU/PyB9kJvIgPNeSVyXjjanW8eftykpP7S32CFEdmb0nj0D8JXOKUNWe97T2wNvWSbm1
+  ansible:
+    privilege: 15
+    role: network-admin
+    sha512_password: $6$88e4YP9cN86RUUUZ$LBzKr2P.tfRkEZja4srfLK3t8TXCKx//t1LM59B6sr7AujC2HFTyKAsHZCxV/WOzHE/e7yrdlpMQxbaq/KW370
+logging:
+  buffered:
+    level: 1000
+  console: informational
+  monitor: informational
+  synchronous:
+    level: all
+mgmt_gateway: 192.168.22.1
+mgmt_interface: Management1
+mgmt_interface_vrf: MGMT
+name_servers:
+- 8.8.8.8

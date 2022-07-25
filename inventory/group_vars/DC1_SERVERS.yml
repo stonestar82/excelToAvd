@@ -1,0 +1,50 @@
+port_profiles: {}
+servers:
+  HOST-A:
+    adapters:
+    - mode: trunk
+      profile: ''
+      server_ports:
+      - Eth1
+      switch_ports:
+      - Ethernet3
+      switches:
+      - Leaf-01
+      type: nic
+    rack: RackA
+  HOST-B:
+    adapters:
+    - mode: trunk
+      profile: ''
+      server_ports:
+      - Eth1
+      switch_ports:
+      - Ethernet3
+      switches:
+      - Leaf-02
+      type: nic
+    rack: RackA
+  HOST-C:
+    adapters:
+    - mode: trunk
+      profile: ''
+      server_ports:
+      - Eth1
+      switch_ports:
+      - Ethernet3
+      switches:
+      - Leaf-03
+      type: nic
+    rack: RackA
+  Shared:
+    adapters:
+    - mode: trunk
+      profile: ''
+      server_ports:
+      - Eth1
+      switch_ports:
+      - Ethernet3
+      switches:
+      - Leaf-04
+      type: nic
+    rack: RackA

@@ -1,0 +1,148 @@
+bfd_multihop:
+  interval: 1200
+  min_rx: 1200
+  multiplier: 3
+bgp_evpn_name: OVERLAY
+bgp_ipv4_filter: Leaf-Ass
+bgp_ipv4_name: UNDERLAY
+bgp_ipv4_prefix: 100.64.0.0/10
+bgp_mlag_ipv4_password: vnEaG8gMeQf3d3cN6PktXQ==
+bgp_peer_groups:
+  EVPN_OVERLAY_PEERS:
+    name: OVERLAY
+    password: null
+  IPv4_UNDERLAY_PEERS:
+    bgp_listen_range_prefix: 100.64.0.0/10
+    name: UNDERLAY
+    password: null
+    peer_filter: Leaf-Ass
+fabric_name: DC1_FABRIC
+l2leaf:
+  defaults:
+    mlag: false
+    mlag_interfaces:
+    - Ethernet3
+    - Ethernet4
+    mlag_peer_ipv4_pool: 10.255.252.0/24
+    mlag_peer_l3_ipv4_pool: 10.255.251.0/24
+    platform: vEOS
+    spanning_tree_mode: mstp
+    spanning_tree_priority: 16384
+    uplink_interfaces:
+    - Ethernet1
+    - Ethernet2
+    uplink_switches:
+    - DC1-LEAF1A
+    - DC1-LEAF1B
+    virtual_router_mac_address: 00:1c:73:00:dc:01
+  node_groups: {}
+l3leaf:
+  defaults:
+    bgp_defaults:
+    - distance bgp 20 200 200
+    - no bgp default ipv4-unicast
+    - graceful-restart restart-time 300
+    - graceful-restart
+    loopback_ipv4_offset: 0
+    loopback_ipv4_pool: 1.1.1.0/24
+    mlag_interfaces:
+    - Ethernet7
+    - Ethernet8
+    mlag_peer_ipv4_pool: 192.168.0.0/32
+    mlag_peer_l3_ipv4_pool: 10.255.251.0/24
+    mlag_port_channel_id: 1000
+    platform: vEOS
+    spanning_tree_mode: none
+    spanning_tree_priority: 16384
+    uplink_interfaces:
+    - Ethernet1
+    - Ethernet2
+    uplink_ipv4_pool: 172.21.1.0/24
+    uplink_switches:
+    - Spine-01
+    - Spine-02
+    virtual_router_mac_address: 00:1c:73:00:dc:01
+    vtep_loopback_ipv4_pool: 192.168.254.0/24
+  node_groups:
+    DC1_BL:
+      bgp_as: 65105
+      mlag_interfaces:
+      - Ethernet7
+      - Ethernet8
+      nodes:
+        BL-01:
+          id: 5
+          mgmt_ip: 192.168.22.197/24
+          uplink_switch_interfaces:
+          - Ethernet5
+          - Ethernet5
+        BL-02:
+          id: 6
+          mgmt_ip: 192.168.22.198/24
+          uplink_switch_interfaces:
+          - Ethernet6
+          - Ethernet6
+    DC1_LEAF1:
+      nodes:
+        Leaf-01:
+          bgp_as: 65101
+          id: 1
+          mgmt_ip: 192.168.22.193/24
+          mlag: false
+          uplink_switch_interfaces:
+          - Ethernet1
+          - Ethernet1
+    DC1_LEAF2:
+      nodes:
+        Leaf-02:
+          bgp_as: 65102
+          id: 2
+          mgmt_ip: 192.168.22.194/24
+          mlag: false
+          uplink_switch_interfaces:
+          - Ethernet2
+          - Ethernet2
+    DC1_LEAF3:
+      nodes:
+        Leaf-03:
+          bgp_as: 65103
+          id: 3
+          mgmt_ip: 192.168.22.195/24
+          mlag: false
+          uplink_switch_interfaces:
+          - Ethernet3
+          - Ethernet3
+    DC1_LEAF4:
+      nodes:
+        Leaf-04:
+          bgp_as: 65104
+          id: 4
+          mgmt_ip: 192.168.22.196/24
+          mlag: false
+          uplink_switch_interfaces:
+          - Ethernet4
+          - Ethernet4
+leaf_bgp_defaults:
+- update wait-install
+- distance bgp 20 200 200
+- no bgp default ipv4-unicast
+leaf_peer_l3: 10.255.251.0/24
+mlag_peer: 10.255.252.0/24
+p2p_uplinks_mtu: 1500
+spine:
+  defaults:
+    bgp_as: '65000'
+    bgp_defaults:
+    - no bgp default ipv4-unicast
+    loopback_ipv4_pool: 1.1.1.200/30
+    mlag_peer_ipv4_pool: 10.255.252.0/24
+    mlag_peer_l3_ipv4_pool: 10.255.251.0/24
+    platform: vEOS
+  nodes:
+    Spine-01:
+      id: 1
+      mgmt_ip: 192.168.22.191/24
+    Spine-02:
+      id: 2
+      mgmt_ip: 192.168.22.192/24
+vxlan_vlan_aware_bundles: true

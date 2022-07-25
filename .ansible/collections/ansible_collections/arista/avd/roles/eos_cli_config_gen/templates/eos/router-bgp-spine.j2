@@ -1,0 +1,55 @@
+{# eos - Router BGP #}
+{% if router_bgp.as is arista.avd.defined %}
+!
+router bgp {{ router_bgp.as }}
+   bgp asn notation asdot
+{%     if router_bgp.router_id is arista.avd.defined %}
+   router-id {{ router_bgp.router_id }}
+{%     endif %}
+{%     if router_bgp.maximum_paths.paths is arista.avd.defined %}
+{%         set paths_cli = "maximum-paths " ~ router_bgp.maximum_paths.paths %}
+{%         if router_bgp.maximum_paths.ecmp is arista.avd.defined %}
+{%             set paths_cli = paths_cli ~ " ecmp " ~ router_bgp.maximum_paths.ecmp %}
+{%         endif %}
+   {{ paths_cli }}
+{%     endif %}
+{%     for bgp_default in router_bgp.bgp_defaults | arista.avd.default([]) %}
+   {{ bgp_default }}
+{%     endfor %}
+{%     for peer_group in router_bgp.peer_groups | arista.avd.convert_dicts('name') | arista.avd.natural_sort('name') %}
+{%         if peer_group.bgp_listen_range_prefix is arista.avd.defined and peer_group.peer_filter is arista.avd.defined %}
+   bgp listen range {{ peer_group.bgp_listen_range_prefix }} peer-group {{ peer_group.name }} peer-filter {{ peer_group.peer_filter }}
+{%         endif %}
+{%     endfor %}
+{%     for peer_group in router_bgp.peer_groups | arista.avd.convert_dicts('name') | arista.avd.natural_sort('name') %}
+{%         if peer_group.type == "ipv4"    %}
+   neighbor {{ peer_group.name }} peer group
+   neighbor {{ peer_group.name }} send-community
+{%           if peer_group.remote_as is arista.avd.defined %}
+   neighbor {{ peer_group.name }} remote-as {{ peer_group.remote_as }}
+{%           endif %}
+{%           if peer_group.maximum_routes is arista.avd.defined %}
+{%             set maximum_routes_cli = "neighbor " ~ peer_group.name ~ " maximum-routes " ~ peer_group.maximum_routes %}
+{%             if peer_group.maximum_routes_warning_limit is arista.avd.defined %}
+{%                 set maximum_routes_cli = maximum_routes_cli ~ " warning-limit " ~ peer_group.maximum_routes_warning_limit %}
+{%             endif %}
+{%             if peer_group.maximum_routes_warning_only is arista.avd.defined(true) %}
+{%                 set maximum_routes_cli = maximum_routes_cli ~ " warning-only" %}
+{%             endif %}
+   {{ maximum_routes_cli }}
+{%           endif %}
+{%         endif %}
+{%     endfor %}
+   redistribute connected route-map Loopback
+{# address family ipv4 activation #}
+{%     if router_bgp.address_family_ipv4 is arista.avd.defined %}
+   !
+   address-family ipv4
+{%         for peer_group in router_bgp.address_family_ipv4.peer_groups | arista.avd.convert_dicts('name') | arista.avd.natural_sort('name') %}
+{%             if peer_group.activate is arista.avd.defined(true) %}
+      neighbor {{ peer_group.name }} activate
+{%             endif %}
+{%         endfor %}
+{%     endif %}
+
+{% endif %}

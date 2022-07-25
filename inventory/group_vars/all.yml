@@ -1,0 +1,26 @@
+# AVD configurations variables
+
+## terminal length
+terminal:
+  length: 40
+  width: 200
+
+## spanning-tree mode mstp
+spanning_tree:
+  mode: none
+
+## clock timezone Asia/Seoul
+clock:
+  timezone: Asia/Seoul
+
+## ip routing
+ip_routing: TRUE
+
+## vrf
+vrfs:
+- name: MGMT
+  ip_routing: False
+
+## banner login
+banners:
+  login: "***********************************************************************\nGlobalTelecom and Arista Networks\n***********************************************************************\nEOF"
