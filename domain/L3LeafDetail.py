@@ -15,6 +15,7 @@ class L3LeafDetail():
     self.uplinkSwitches = "Uplink Switches"
     self.uplinkIpv4Pool = "Uplink IPv4 Pool"
     self.mlagInterfaces = "MLAG Interfaces"
+    self.mlagPortChannelId = "MLAG Port Channel ID"
     self.mlagPeerIpv4Pool = "MLAG Peer IPv4 Pool"
     self.mlagPeerL3Ipv4Pool = "MLAG Peer L3 IPv4 Pool"
     self.virtualRouterMacAddress = "Virtual Router Mac-Address"

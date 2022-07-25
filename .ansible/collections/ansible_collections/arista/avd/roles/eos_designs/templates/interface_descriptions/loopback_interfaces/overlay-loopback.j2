@@ -4,7 +4,7 @@
 {%     elif switch.mpls_lsr is arista.avd.defined(true) %}
 {%         set overlay_loopback_description = "LSR_Router_ID" %}
 {%     else %}
-{%         set overlay_loopback_description = "EVPN_Overlay_Peering" %}
+{%         set overlay_loopback_description = "RouterID_EVPN" %}
 {%     endif %}
 {% endif %}
 {{ overlay_loopback_description }}

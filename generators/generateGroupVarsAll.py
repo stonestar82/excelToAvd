@@ -1,7 +1,8 @@
 import xlrd, re
 from operator import *
 from generators.envirmentVariables import *
-from domain.GeneralInfo import *
+from domain.GenernalConfiguration import *
+from jinja2 import Template
 
 def convertToBoolIfNeeded(variable):
 	if type(variable) == str and re.match(r'(?i)(True|False)', variable.strip()):
@@ -17,14 +18,24 @@ def parseGeneralInfo(inventory_file):
 	gc = GenernalConfiguration()
 
 	configuration_variable_mappers = {
-		gc.managementInterface:"mgmt_interface", 
-		gc.managementInterfaceVrf:"mgmt_interface_vrf", 
-		gc.managementGateway:"mgmt_gateway",
-		gc.dnsServers:"name_servers", 
+		gc.managementInterface: "mgmt_interface", 
+		gc.managementInterfaceVrf: "mgmt_interface_vrf", 
+		gc.managementGateway: "mgmt_gateway",
+		gc.dnsServers: "name_servers", 
 		gc.ntpServers: "ntp_servers",
 		gc.ntpServersPrefer: "ntp_servers_prefer",
-		gc.adminPassword:"admin_info",
-		gc.ansiblePassword:"ansible_info"
+		gc.adminPassword: "admin_info",
+		gc.ansiblePassword: "ansible_info",
+		gc.logginBufferedLevel: "loggin_buffered_level",
+		gc.logginConsole: "loggin_console",
+		gc.logginMonitor: "loggin_monitor",
+		gc.logginSynchronous: "loggin_sychronous",
+		gc.terminalLength: "terminal_length",
+		gc.terminalWidth: "terminal_width",
+		gc.bannerLogin: "banner_login",
+		gc.timeZone: "time_zone",
+		gc.spanningTreeMode: "spanning_tree_mode",
+		gc.iproute: "ip_route"
 	}
 
 	workbook = xlrd.open_workbook(inventory_file)
@@ -98,6 +109,58 @@ def parseGeneralInfo(inventory_file):
 
 		general_info["custom_structured_configuration_ntp"]["servers"] = ntpInfo
 
+	# Loggin 세팅
+	# loggin_buffered_level",
+	# 	gc.logginConsole: "loggin_console",
+	# 	gc.logginMonitor: "loggin_monitor",
+	# 	gc.logginSynchronous: "loggin_sychronous"
+	# logging:
+  # buffered:
+  #   level: 1000
+  # console: informational
+  # monitor: informational
+  # synchronous: all
+
+	loginInfo = []	
+	if ne(info["loggin_console"], ""):
+		loginInfo.append(["console", info["loggin_console"]])
+
+	if ne(info["loggin_monitor"], ""):
+		loginInfo.append(["monitor", info["loggin_monitor"]])
+
+	if loginInfo:
+		general_info["logging"] = dict(loginInfo)
+
+	if ne(info["loggin_buffered_level"], ""):
+		v = info["loggin_buffered_level"]
+		general_info["logging"]["buffered"] = {
+			"level": int(v) if type(v) == float else v
+		}
+
+	if ne(info["loggin_sychronous"], ""):
+		v = info["loggin_sychronous"]
+		general_info["logging"]["synchronous"] = {
+			"level": info["loggin_sychronous"]
+		}
+
+	# Group Vars all.yml 파일 생성
+	terminalLength = int(info["terminal_length"]) if type(info["terminal_length"]) == float else info["terminal_length"]
+	termninalWidth = int(info["terminal_width"]) if type(info["terminal_width"]) == float else info["terminal_width"]
+	data = {
+		"terminal_length": terminalLength,
+		"terminal_width": termninalWidth,
+		"spanning_tree_mode": info["spanning_tree_mode"],
+		"timezone": info["time_zone"],
+		"ip_route": info["ip_route"],
+		"default_mgmt": info["mgmt_interface_vrf"],
+		"banner_login": info["banner_login"]
+	}
+	
+	with open('/workspace/excelToAvd/templates/allyml.j2') as f:
+		template = Template(f.read())
+
+	with open("/workspace/excelToAvd/inventory/group_vars/all.yml", "w") as reqs:
+			reqs.write(template.render(**data))
 
 
 	return general_info

@@ -25,8 +25,8 @@
   delegate_to: localhost
   run_once: true
 
-- name: Include device intended structure configuration variables
-  tags: [build, provision]
+- name: device 기본 설정
+  tags: [always]
   include_vars: "{{ filename }}"
   delegate_to: localhost
   # errors='ignore' is needed for compatibility with ansible-core < 2.12
@@ -34,8 +34,8 @@
   vars:
     filename: "{{ structured_dir }}/{{ inventory_hostname }}.{{ avd_structured_config_file_format }}"
 
-- name: Generate eos intended configuration
-  tags: [build, provision]
+- name: cfg 파일 생성
+  tags: [default]
   template:
     src: eos-intended-config.j2
     dest: "{{ eos_config_dir }}/{{ inventory_hostname }}.cfg"
@@ -43,8 +43,44 @@
   delegate_to: localhost
   register: eosconfig
 
+- name: init cfg 파일 생성
+  tags: [init]
+  template:
+    src: eos-init-config.j2
+    dest: "{{ eos_config_dir }}/{{ inventory_hostname }}.cfg"
+    mode: 0664
+  delegate_to: localhost
+  register: eosconfig
+
+- name: base cfg 파일 생성
+  tags: [base]
+  template:
+    src: eos-base-config.j2
+    dest: "{{ eos_config_dir }}/{{ inventory_hostname }}.cfg"
+    mode: 0664
+  delegate_to: localhost
+  register: eosconfig
+
+- name: P2P IP cfg 파일 생성
+  tags: [p2pip]
+  template:
+    src: eos-p2pip-config.j2
+    dest: "{{ eos_config_dir }}/{{ inventory_hostname }}.cfg"
+    mode: 0664
+  delegate_to: localhost
+  register: eosconfig
+
+- name: BGP 파일 생성
+  tags: [bgp]
+  template:
+    src: eos-bgp-config.j2
+    dest: "{{ eos_config_dir }}/{{ inventory_hostname }}.cfg"
+    mode: 0664
+  delegate_to: localhost
+  register: eosconfig
+
 - name: Generate device documentation
-  tags: [build, provision, documentation]
+  tags: [documentation]
   delegate_to: localhost
   when: generate_device_documentation | arista.avd.default(true)
   copy:

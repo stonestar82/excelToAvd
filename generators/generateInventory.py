@@ -1,6 +1,11 @@
 from pickle import NONE
-import xlrd
+import xlrd, re
 import yaml
+
+def convertToBoolIfNeeded(variable):
+	if type(variable) == str and re.match(r'(?i)(True|False)', variable.strip()):
+		variable = True if re.match(r'(?i)true', variable.strip()) else False
+	return variable
 
 def getFabricName(inventory_file):
 	workbook = xlrd.open_workbook(inventory_file)
@@ -35,6 +40,27 @@ def getCVPInventory(inventory_file):
 		break
 	return cvp_dict
 
+def parseSuperSpineInfo(inventory_file):
+	'''
+	'''
+	spines_info = {"vars": {"type": "super-spine"}, "hosts": {}}
+	workbook = xlrd.open_workbook(inventory_file)
+	inventory_worksheet = workbook.sheet_by_name("Spine Info")
+	node_groups = {}
+	first_row = [] # The row where we stock the name of the column
+	for col in range(inventory_worksheet.ncols):
+		first_row.append( inventory_worksheet.cell_value(0,col) )
+	# transform the workbook to a list of dictionaries
+	for row in range(1, inventory_worksheet.nrows):
+		spine_info = {}
+		for col in range(inventory_worksheet.ncols):
+			spine_info[first_row[col]]=inventory_worksheet.cell_value(row,col)
+		
+		if convertToBoolIfNeeded(spine_info["Super Spine"]):
+			hostname = spine_info["Hostname"]
+			spines_info["hosts"][hostname] = {"ansible_host": spine_info["Management IP"].split("/")[0]}
+	return spines_info
+
 def parseSpineInfo(inventory_file):
 	'''
 	'''
@@ -50,6 +76,8 @@ def parseSpineInfo(inventory_file):
 		spine_info = {}
 		for col in range(inventory_worksheet.ncols):
 			spine_info[first_row[col]]=inventory_worksheet.cell_value(row,col)
+		
+		# if not convertToBoolIfNeeded(spine_info["Super Spine"]):
 		hostname = spine_info["Hostname"]
 		spines_info["hosts"][hostname] = {"ansible_host": spine_info["Management IP"].split("/")[0]}
 	return spines_info
@@ -100,6 +128,8 @@ def getTenantNetworks(fabric_name):
 def getFabricInventory(inventory_file, fabric_name):
 	fabric_inventory = {"children":{}}
 
+	# fabric_inventory["children"][fabric_name+"_SUPERSPINES"] = parseSuperSpineInfo(inventory_file)
+
 	fabric_inventory["children"][fabric_name+"_SPINES"] = parseSpineInfo(inventory_file)
 	
 	if parseLeafInfo(inventory_file, leaf_type="L3") != None:
@@ -132,6 +162,7 @@ def generateInventory(inventory_file):
 					"children": {
 						fabric_name + "_FABRIC": {
 							"children": { 
+								fabric_name + "_SUPERSPINES" : None,
 								fabric_name + "_SPINES" : None,
 								fabric_name + "_L3LEAFS" : None,
 								fabric_name + "_L2LEAFS" : None								

@@ -68,7 +68,7 @@
                                           p2p_profile.ptp_enable) %}
 {%         set p2p_interface.type = "routed" %}
 {%         set p2p_interface.shutdown = "false" %}
-{%         set p2p_interface.description = "P2P_LINK_TO_" ~ p2p_interface.peer ~ "_" ~ p2p_interface.peer_interface %}
+{%         set p2p_interface.description = "Connection to " ~ p2p_interface.peer ~ "-" ~ p2p_interface.peer_interface %}
 {%         do l3_edge_data.p2p_interfaces.update({ node_interface: p2p_interface }) %}
 {%         if p2p_link.include_in_underlay_protocol | arista.avd.default(
               p2p_profile.include_in_underlay_protocol) is arista.avd.defined(true) %}

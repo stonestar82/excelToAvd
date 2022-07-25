@@ -4,7 +4,36 @@ MGMT_INTERFACE_VRF = "MGMT"
 
 
 ## Group vars all.yml
-GROUP_VARS_ALL_CONFIG = "# AVD configurations variables"
+GROUP_VARS_ALL_CONFIG = """
+# AVD configurations variables
+
+## terminal length 40
+terminal:
+  length: 40
+
+## service routing protocols model multi-agent
+service_routing_protocols_model: multi-agent
+
+## spanning-tree mode mstp
+spanning_tree:
+  mode: mstp
+
+## clock timezone Asia/Seoul
+clock:
+  timezone: Asia/Seoul
+
+## ip routing
+ip_routing: True
+
+## vrf
+vrfs:
+- name: MGMT
+  ip_routing: False
+
+## banner login
+banners:
+  login: "***********************************************************************\\nGlobalTelecom and Arista Networks\\n***********************************************************************\\nEOF"
+"""
 
 # ## ansible.cfg
 # ANSIBLE_CONFIG = '''[defaults]

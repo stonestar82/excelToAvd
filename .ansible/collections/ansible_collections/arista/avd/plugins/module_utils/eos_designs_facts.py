@@ -1,4 +1,5 @@
 from __future__ import (absolute_import, division, print_function)
+from pprint import pprint
 __metaclass__ = type
 
 import re
@@ -738,6 +739,14 @@ class EosDesignsFacts:
                     "password": default(
                         get(self._hostvars, "bgp_peer_groups.ipv4_underlay_peers.password"),
                         get(self._hostvars, "bgp_peer_groups.IPv4_UNDERLAY_PEERS.password")
+                    ),
+                    "bgp_listen_range_prefix": default(
+                        get(self._hostvars, "bgp_peer_groups.ipv4_underlay_peers.bgp_listen_range_prefix"),
+                        get(self._hostvars, "bgp_peer_groups.IPv4_UNDERLAY_PEERS.bgp_listen_range_prefix")
+                    ),
+                    "peer_filter": default(
+                        get(self._hostvars, "bgp_peer_groups.ipv4_underlay_peers.peer_filter"),
+                        get(self._hostvars, "bgp_peer_groups.IPv4_UNDERLAY_PEERS.peer_filter")
                     ),
                 },
                 "mlag_ipv4_underlay_peer": {

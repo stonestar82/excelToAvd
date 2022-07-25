@@ -11,6 +11,7 @@ class Spine():
     self.id = "ID"
     self.hostname = "Hostname"
     self.managementIp = "Management IP"
+    self.superSpine = "Super Spine"
 
     # self.detailSheetName column name
     self.platform = "Platform"
@@ -23,3 +24,6 @@ class Spine():
     self.loopbackIpv4Pool = "Loopback IPv4 Pool"
     self.mlagPeerIpv4Pool = "Mlag Peer IPv4 Pool"
     self.mlagPeerL3Ipv4Pool = "Mlag Peer L3 IPv4 Pool"
+    self.uplinkSwitches = "Uplink Switches"
+    self.uplinkSwitchInterfaces = "Uplink Switch Interfaces"
+    self.uplinkInterfaces = "Uplink Interfaces"

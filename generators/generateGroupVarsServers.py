@@ -27,7 +27,8 @@ def parseServers(inventory_file):
             "server_ports": [ port.strip() for port in server_info["Server Ports"].split(",") ],
             "switch_ports": [ port.strip() for port in server_info["Switch Ports"].split(",") ],
             "switches": [ switch.strip() for switch in server_info["Switches"].split(",") ],
-            "profile": server_info["Port Profile"]
+            "profile": server_info["Port Profile"],
+            "mode": server_info["Mode"]
         }
         if server_info["Port-Channel"].strip() != "":
             adapter_info["port_channel"] = {

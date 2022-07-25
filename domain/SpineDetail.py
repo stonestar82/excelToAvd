@@ -17,3 +17,6 @@ class SpineDetail():
     self.loopbackIpv4Pool = "Loopback IPv4 Pool"
     self.mlagPeerIpv4Pool = "Mlag Peer IPv4 Pool"
     self.mlagPeerL3Ipv4Pool = "Mlag Peer L3 IPv4 Pool"
+    self.peerFilterName = "Peer Filter Name"
+    self.peerFilterSequenceNumber = "Peer Filter Sequence Numbers"
+    self.peerFilterMatch = "Peer Filter Match"

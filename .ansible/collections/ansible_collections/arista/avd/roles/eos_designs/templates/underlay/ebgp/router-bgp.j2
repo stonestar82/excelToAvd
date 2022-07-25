@@ -9,6 +9,12 @@ router_bgp:
 {% endif %}
       maximum_routes: 12000
       send_community: all
+{% if switch.bgp_peer_groups.ipv4_underlay_peers.bgp_listen_range_prefix is arista.avd.defined() %}
+      bgp_listen_range_prefix: "{{ switch.bgp_peer_groups.ipv4_underlay_peers.bgp_listen_range_prefix }}"
+{% endif %}  
+{% if switch.bgp_peer_groups.ipv4_underlay_peers.peer_filter is arista.avd.defined() %}
+      peer_filter: "{{ switch.bgp_peer_groups.ipv4_underlay_peers.peer_filter }}"
+{% endif %}  
   address_family_ipv4:
     peer_groups:
       {{ switch.bgp_peer_groups.ipv4_underlay_peers.name }}:

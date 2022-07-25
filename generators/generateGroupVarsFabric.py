@@ -2,7 +2,7 @@ from operator import eq, ne
 import xlrd
 import json, yaml, re
 from collections import OrderedDict
-from domain.GeneralInfo import *
+from domain.GenernalConfiguration import *
 from domain.Spine import *
 from domain.SpineDetail import *
 from domain.L3Leaf import *
@@ -149,6 +149,7 @@ def parseL3LeafInfo(inventory_file):
 		l3leafDetail.uplinkSwitches: "uplink_switches",		
 		l3leafDetail.uplinkIpv4Pool: "uplink_ipv4_pool",
 		l3leafDetail.mlagInterfaces:"mlag_interfaces", 
+		l3leafDetail.mlagPortChannelId:"mlag_port_channel_id", 
 		l3leafDetail.mlagPeerIpv4Pool: "mlag_peer_ipv4_pool",
 		l3leafDetail.mlagPeerL3Ipv4Pool: "mlag_peer_l3_ipv4_pool",
 		l3leafDetail.virtualRouterMacAddress:"virtual_router_mac_address",
@@ -185,7 +186,14 @@ def parseL3LeafInfo(inventory_file):
 		# optional_params["uplink_switches"] = [uplink_iface.strip() for uplink_iface in l3_leaf_info["Uplink Switches"].split(",") if uplink_iface] if l3_leaf_info["Uplink Switches"] != "" else None
 		# optional_params["uplink_interfaces"] = [uplink_iface.strip() for uplink_iface in l3_leaf_info["Uplink Interfaces"].split(",") if uplink_iface] if l3_leaf_info["Uplink Interfaces"] != "" else None
 		optional_params["bgp_as"] = int(l3_leaf_info[l3leaf.bgpAs]) if l3_leaf_info[l3leaf.bgpAs] != "" else None
-		optional_params["mlag_interfaces"] = [iface.strip() for iface in l3_leaf_info[l3leaf.mlagInterfaces].split(",") if iface] if l3_leaf_info[l3leaf.mlagInterfaces] != "" else None
+		# optional_params["mlag_interfaces"] = [iface.strip() for iface in l3_leaf_info[l3leaf.mlagInterfaces].split(",") if iface] if l3_leaf_info[l3leaf.mlagInterfaces] != "" else None
+		if ne("", l3_leaf_info[l3leaf.mlagInterfaces]):
+			optional_params["mlag_interfaces"] = [iface.strip() for iface in l3_leaf_info[l3leaf.mlagInterfaces].split(",") if iface] if l3_leaf_info[l3leaf.mlagInterfaces] != "" else None
+		else:
+			optional_params["mlag"] = False
+		
+
+
 		for k, v in optional_params.items():
 			if v is not None:
 				v = int(v) if type(v) == float else v
@@ -258,6 +266,46 @@ def parseL3LeafBGPDefaults(inventory_file):
 			bgp_defaults_list.append(v)
 	return bgp_defaults_list
 
+# Super Spine Switches
+def parseSuperSpineInfo(inventory_file):
+	spine = Spine()
+	spineDetail = SpineDetail()
+	spine_yaml = {"nodes": {}}
+
+	configuration_variable_mappers = {
+		spine.platform: "platform", 
+		spine.bgpPeeringAsnRange: "leaf_as_range", 
+		spine.bgpAsn:"bgp_as",
+		spine.loopbackIpv4Pool: "loopback_ipv4_pool",
+		spine.mlagPeerIpv4Pool: "mlag_peer_ipv4_pool",
+		spine.mlagPeerL3Ipv4Pool: "mlag_peer_l3_ipv4_pool",
+		spine.uplinkSwitches: "uplink_switches",
+		spine.uplinkSwitchInterfaces: "uplink_switch_interfaces",
+		spine.uplinkInterfaces: "uplink_interfaces",
+		spine.superSpine: "super_spine"
+	}
+	
+	workbook = xlrd.open_workbook(inventory_file)
+	inventory_worksheet = workbook.sheet_by_name(spine.sheetName)
+	node_groups = {}
+	first_row = [] # The row where we stock the name of the column
+	for col in range(inventory_worksheet.ncols):
+		first_row.append( inventory_worksheet.cell_value(0,col) )
+	# transform the workbook to a list of dictionaries
+	for row in range(1, inventory_worksheet.nrows):
+		spine_info = {}
+		for col in range(inventory_worksheet.ncols):  			
+			spine_info[first_row[col]]=inventory_worksheet.cell_value(row,col)
+
+		if convertToBoolIfNeeded(spine_info[spine.superSpine]):				
+			hostname = spine_info[spine.hostname]
+			node_details = {}
+			node_details["id"] = int(spine_info[spine.id])
+			node_details["mgmt_ip"] = spine_info[spine.managementIp]
+			node_details["super_spine_loopback_network_summary"] = "192.168.255.0/24"
+			spine_yaml["nodes"][hostname] = node_details
+			
+	return spine_yaml
 
 # Spine Switches
 def parseSpineInfo(inventory_file):
@@ -272,6 +320,10 @@ def parseSpineInfo(inventory_file):
 		spine.loopbackIpv4Pool: "loopback_ipv4_pool",
 		spine.mlagPeerIpv4Pool: "mlag_peer_ipv4_pool",
 		spine.mlagPeerL3Ipv4Pool: "mlag_peer_l3_ipv4_pool",
+		spine.uplinkSwitches: "uplink_switches",
+		spine.uplinkSwitchInterfaces: "uplink_switch_interfaces",
+		spine.uplinkInterfaces: "uplink_interfaces",
+		spine.superSpine: "super_spine"
 	}
 	
 	workbook = xlrd.open_workbook(inventory_file)
@@ -285,12 +337,24 @@ def parseSpineInfo(inventory_file):
 		spine_info = {}
 		for col in range(inventory_worksheet.ncols):
 			spine_info[first_row[col]]=inventory_worksheet.cell_value(row,col)
+
+		# if not convertToBoolIfNeeded(spine_info[spine.superSpine]):				
 		hostname = spine_info[spine.hostname]
 		node_details = {}
 		node_details["id"] = int(spine_info[spine.id])
 		node_details["mgmt_ip"] = spine_info[spine.managementIp]
+
+		# if ne(spine_info[spine.uplinkSwitches], ""):
+		# 	node_details["uplink_switches"] = [swtich.strip() for swtich in spine_info[spine.uplinkSwitches].split(",")]
+		
+		# if ne(spine_info[spine.uplinkSwitchInterfaces], ""):
+		# 	node_details["uplink_switch_interfaces"] = [swtich.strip() for swtich in spine_info[spine.uplinkSwitchInterfaces].split(",")]
+		
+		# if ne(spine_info[spine.uplinkInterfaces], ""):
+		# 	node_details["uplink_interfaces"] = [swtich.strip() for swtich in spine_info[spine.uplinkInterfaces].split(",")]
+
 		spine_yaml["nodes"][hostname] = node_details
-	
+		
 	#parse default values
 	spine_defaults_worksheet = workbook.sheet_by_name(spineDetail.sheetName)
 	# transform the workbook to a list of dictionaries
@@ -406,7 +470,11 @@ def parseGeneralVariables(inventory_file):
 		genernalConfiguration.mlagPeerNetworkSummary: "mlag_peer",
 		genernalConfiguration.vxlanVlanAwareBundles: "vxlan_vlan_aware_bundles",
 		genernalConfiguration.pointToPointUplinkMtu: "p2p_uplinks_mtu",
+		genernalConfiguration.bgpIpv4UnderlayPeerGroupName: "bgp_ipv4_name",
 		genernalConfiguration.bgpIpv4UnderlayPeerGroupPassword: "bgp_ipv4_password",
+		genernalConfiguration.bgpIpv4UnderlayPeerFilter: "bgp_ipv4_filter",
+		genernalConfiguration.bgpIpv4UnderlayPrefix: "bgp_ipv4_prefix",
+		genernalConfiguration.bgpEvpnOverlayPeerGroupName: "bgp_evpn_name",
 		genernalConfiguration.bgpEvpnOverlayPeerGroupPassword: "bgp_evpn_password",
 		genernalConfiguration.bgpMlagIpv4UnderlayGroupPassword: "bgp_mlag_ipv4_password",
 		genernalConfiguration.bgpBfdMultihopInterval: "bfd_interval",
@@ -429,23 +497,28 @@ def parseGeneralVariables(inventory_file):
 
 			general_yaml[configuration_variable_mappers[k]] = v
 
+	# general_yaml["bgp_peer_groups"] = {
+	# 	"IPv4_UNDERLAY_PEERS":{"password": general_yaml["bgp_ipv4_password"]},
+	# 	"EVPN_OVERLAY_PEERS":{"password": general_yaml["bgp_evpn_password"]},
+	# 	"MLAG_IPv4_UNDERLAY_PEER":{"password": general_yaml["bgp_mlag_ipv4_password"]}
+	# }
+
 	general_yaml["bgp_peer_groups"] = {
-		"IPv4_UNDERLAY_PEERS":{"password": general_yaml["bgp_ipv4_password"]},
-		"EVPN_OVERLAY_PEERS":{"password": general_yaml["bgp_evpn_password"]},
-		"MLAG_IPv4_UNDERLAY_PEER":{"password": general_yaml["bgp_mlag_ipv4_password"]}
+		"IPv4_UNDERLAY_PEERS":{ "name": general_yaml["bgp_ipv4_name"], "bgp_listen_range_prefix": general_yaml["bgp_ipv4_prefix"], "peer_filter": general_yaml["bgp_ipv4_filter"], "password": general_yaml["bgp_ipv4_password"]},
+		"EVPN_OVERLAY_PEERS":{ "name": general_yaml["bgp_evpn_name"], "password": general_yaml["bgp_evpn_password"]}
 	}
 
 	del(general_yaml["bgp_ipv4_password"])
 	del(general_yaml["bgp_evpn_password"])
-	del(general_yaml["bgp_mlag_ipv4_password"])
+	# del(general_yaml["bgp_mlag_ipv4_password"])
 
-	general_yaml["mlag_ips"] = {
-		"leaf_peer_l3": general_yaml["leaf_peer_l3"], 
-		"mlag_peer": general_yaml["mlag_peer"]
-	}
+	# general_yaml["mlag_ips"] = {
+	# 	"leaf_peer_l3": general_yaml["leaf_peer_l3"], 
+	# 	"mlag_peer": general_yaml["mlag_peer"]
+	# }
 
-	del(general_yaml["leaf_peer_l3"])
-	del(general_yaml["mlag_peer"])
+	# del(general_yaml["leaf_peer_l3"])
+	# del(general_yaml["mlag_peer"])
 
 	general_yaml["bfd_multihop"] = {
 		"interval": general_yaml["bfd_interval"], 
@@ -462,6 +535,7 @@ def parseGeneralVariables(inventory_file):
 def generateGroupVarsFabric(file_location):
 
 	fabric_name = parseGeneralVariables(file_location)
+	# fabric_name["super_spine"] = parseSuperSpineInfo(file_location)
 	fabric_name["spine"] = parseSpineInfo(file_location)
 	fabric_name["l3leaf"] = parseL3LeafInfo(file_location)
 	fabric_name["l2leaf"] = parseL2LeafInfo(file_location)
