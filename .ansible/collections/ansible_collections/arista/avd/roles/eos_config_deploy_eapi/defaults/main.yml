@@ -18,10 +18,10 @@ eos_config_dir_name: 'configs'
 eos_config_dir: '{{ output_dir }}/{{ eos_config_dir_name }}'
 
 # Backup directories path and filenames
-post_running_config_backup_filename: "{{ inventory_hostname }}_{{ nowDate }}.cfg"
+post_running_config_backup_filename: "{{ inventory_hostname }}_{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}.cfg"
 post_running_config_backup_dir_name: 'config_backup/post'
 post_running_config_backup_dir: '{{ root_dir }}/{{ post_running_config_backup_dir_name }}'
 
-pre_running_config_backup_filename: "{{ inventory_hostname }}_{{ nowDate }}.cfg"
+pre_running_config_backup_filename: "{{ inventory_hostname }}_{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}.cfg"
 pre_running_config_backup_dir_name: 'config_backup/pre'
 pre_running_config_backup_dir: '{{ root_dir }}/{{ pre_running_config_backup_dir_name }}'
