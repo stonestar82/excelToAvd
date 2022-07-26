@@ -81,16 +81,6 @@ def main():
 			os.mkdir("./.ansible")
 			os.mkdir("./.ansible/collections")
 
-	#Install ansible collections if necessary
-	if not os.path.exists("./.ansible/collections/ansible_collections/arista/avd"):
-			print("Installing arista.avd collection")
-			process = subprocess.Popen(['ansible-galaxy', 'collection', 'install', 'arista.avd', '-p', './.ansible/collections'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			stdout, stderr = process.communicate()
-	if not os.path.exists("./.ansible/collections/ansible_collections/arista/cvp"):
-			print("Installing arista.cvp collection")
-			process = subprocess.Popen(['ansible-galaxy', 'collection', 'install', 'arista.cvp',  '-p', './.ansible/collections'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			stdout, stderr = process.communicate()
-
 	#Create intended directories
 	# if not os.path.exists("./inventory/intended/batfish"):
 	#     os.makedirs("./inventory/intended/batfish")
