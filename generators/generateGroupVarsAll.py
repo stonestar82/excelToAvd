@@ -156,10 +156,10 @@ def parseGeneralInfo(inventory_file):
 		"banner_login": info["banner_login"]
 	}
 	
-	with open('/workspace/excelToAvd/templates/allyml.j2') as f:
+	with open('./avd/templates/allyml.j2') as f:
 		template = Template(f.read())
 
-	with open("/workspace/excelToAvd/inventory/group_vars/all.yml", "w") as reqs:
+	with open("./avd/inventory/group_vars/all.yml", "w") as reqs:
 			reqs.write(template.render(**data))
 
 
