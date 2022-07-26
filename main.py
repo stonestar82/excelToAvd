@@ -30,7 +30,7 @@ def main():
 	#     print("Passwords do not match")
 	#     return
 
-	file_location = "/workspace/excelToAvd/inventory.xlsx"
+	file_location = "./inventory.xlsx"
 	if file_location is None:
 			print("Please specify a path for the Excel file by using -f. Enter 'python main.py -h' for more details.")
 			return
@@ -77,80 +77,80 @@ def main():
 	avd["group_vars"][fabric_name + "_SERVERS"] = generateGroupVarsServers(file_location)
 
 	#Create avd directory
-	if not os.path.exists("/workspace/excelToAvd/.ansible"):
-			os.mkdir("/workspace/excelToAvd/.ansible")
-			os.mkdir("/workspace/excelToAvd/.ansible/collections")
+	if not os.path.exists("./.ansible"):
+			os.mkdir("./.ansible")
+			os.mkdir("./.ansible/collections")
 
 	#Install ansible collections if necessary
-	if not os.path.exists("/workspace/excelToAvd/.ansible/collections/ansible_collections/arista/avd"):
+	if not os.path.exists("./.ansible/collections/ansible_collections/arista/avd"):
 			print("Installing arista.avd collection")
-			process = subprocess.Popen(['ansible-galaxy', 'collection', 'install', 'arista.avd', '-p', '/workspace/excelToAvd/.ansible/collections'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			process = subprocess.Popen(['ansible-galaxy', 'collection', 'install', 'arista.avd', '-p', './.ansible/collections'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			stdout, stderr = process.communicate()
-	if not os.path.exists("/workspace/excelToAvd/.ansible/collections/ansible_collections/arista/cvp"):
+	if not os.path.exists("./.ansible/collections/ansible_collections/arista/cvp"):
 			print("Installing arista.cvp collection")
-			process = subprocess.Popen(['ansible-galaxy', 'collection', 'install', 'arista.cvp',  '-p', '/workspace/excelToAvd/.ansible/collections'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			process = subprocess.Popen(['ansible-galaxy', 'collection', 'install', 'arista.cvp',  '-p', './.ansible/collections'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			stdout, stderr = process.communicate()
 
 	#Create intended directories
-	# if not os.path.exists("/workspace/excelToAvd/inventory/intended/batfish"):
-	#     os.makedirs("/workspace/excelToAvd/inventory/intended/batfish")
-	if not os.path.exists("/workspace/excelToAvd/inventory/intended/configs"):
-			os.makedirs("/workspace/excelToAvd/inventory/intended/configs")
-	if not os.path.exists("/workspace/excelToAvd/inventory/intended/structured_configs"):
-			os.makedirs("/workspace/excelToAvd/inventory/intended/structured_configs")
-	# if not os.path.exists("/workspace/excelToAvd/inventory/intended/structured_configs/cvp"):
-	#     os.makedirs("/workspace/excelToAvd/inventory/intended/structured_configs/cvp")
+	# if not os.path.exists("./inventory/intended/batfish"):
+	#     os.makedirs("./inventory/intended/batfish")
+	if not os.path.exists("./inventory/intended/configs"):
+			os.makedirs("./inventory/intended/configs")
+	if not os.path.exists("./inventory/intended/structured_configs"):
+			os.makedirs("./inventory/intended/structured_configs")
+	# if not os.path.exists("./inventory/intended/structured_configs/cvp"):
+	#     os.makedirs("./inventory/intended/structured_configs/cvp")
 
 	#Create documentation directory
-	if not os.path.exists("/workspace/excelToAvd/inventory/documentation/{}".format(fabric_name)):
-			os.makedirs("/workspace/excelToAvd/inventory/documentation/{}".format(fabric_name))
-	if not os.path.exists("/workspace/excelToAvd/inventory/documentation/devices"):
-			os.makedirs("/workspace/excelToAvd/inventory/documentation/devices")		
+	if not os.path.exists("./inventory/documentation/{}".format(fabric_name)):
+			os.makedirs("./inventory/documentation/{}".format(fabric_name))
+	if not os.path.exists("./inventory/documentation/devices"):
+			os.makedirs("./inventory/documentation/devices")		
 
 	#Create inventory file
 	# yaml.dump시 sort_keys=False 값을 주지 않으면 키값 기준으로 오름차순으로 정렬되어 적용됨
 	# sort_keys=False 실제 적용한 값 순서대로 처리
 	taskPrint("TASK [inventory.yml Generate]")
-	with BlankNone(), open("/workspace/excelToAvd/inventory/inventory.yml", "w") as inv:
+	with BlankNone(), open("./inventory/inventory.yml", "w") as inv:
 			inv.write(yaml.dump(avd["inventory"], sort_keys=False))
 
 	taskPrint("TASK [Group Vars *.yml Generate]")
 	#Create group_vars files
-	if not os.path.exists("/workspace/excelToAvd/inventory/group_vars"):
-			os.mkdir("/workspace/excelToAvd/inventory/group_vars")
+	if not os.path.exists("./inventory/group_vars"):
+			os.mkdir("./inventory/group_vars")
 	for k, v in avd["group_vars"].items():
-			path = "/workspace/excelToAvd/inventory/group_vars/{}.yml".format(k)
+			path = "./inventory/group_vars/{}.yml".format(k)
 			with open(path, "w") as gvfile:
 					gvfile.write(yaml.dump(v))
 
 	##### ansible.cfg 고정으로 변경
 	# ansible.cfg 파일 생성
 	# taskPrint("TASK [ansible.cfg Generate]")
-	# with open("/workspace/excelToAvd/ansible.cfg", "w") as ans_cfg:
+	# with open("./ansible.cfg", "w") as ans_cfg:
 	# 		ans_cfg.write(ANSIBLE_CONFIG)
 	
 	#Create dc-fabric-deploy-cvp.yml
-	# with open("/workspace/excelToAvd/inventory/dc-fabric-deploy-cvp.yml", "w") as ans_pb:
+	# with open("./inventory/dc-fabric-deploy-cvp.yml", "w") as ans_pb:
 	#     ans_pb.write(avd["dc-fabric-deploy-cvp"])
 
 	#Create requirements file
-	with open("/workspace/excelToAvd/inventory/requirements.txt", "w") as reqs:
-			reqs.write(avd["requirements"])
+	# with open("./inventory/requirements.txt", "w") as reqs:
+	# 		reqs.write(avd["requirements"])
 
 	# deploy playbook 생성
 	taskPrint("TASK [deploy.yml PlayBook Generate]")
 	data = { "fabricName" : fabric_name }
-	with open('/workspace/excelToAvd/templates/deploy.j2') as f:
+	with open('./templates/deploy.j2') as f:
 		template = Template(f.read())
 
-	with open("/workspace/excelToAvd/deploy.yml", "w") as reqs:
+	with open("./deploy.yml", "w") as reqs:
 			reqs.write(template.render(**data))
 
 	# taskPrint("TASK [deploy.yml PlayBook Exec]")
 	# os.system("ansible-playbook deploy.yml")
 
     #Install requirements
-    # process = subprocess.Popen(['pip', 'install', '-r', '/workspace/excelToAvd/avd/requirements.txt'],
+    # process = subprocess.Popen(['pip', 'install', '-r', './avd/requirements.txt'],
     #                  stdout=subprocess.PIPE, 
     #                  stderr=subprocess.PIPE)
     # stdout, stderr = process.communicate()
