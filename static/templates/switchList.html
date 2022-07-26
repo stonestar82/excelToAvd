@@ -1,0 +1,13 @@
+
+<div>
+  <p>스위치 설정파일(.cfg)리스트</p>
+  <ul>
+  {% for item in switchList %}
+    {% set switch = item.replace(".cfg", "") %}
+    <li><a href="/read/{{ switch }}">{{ switch }}</a></li>
+  {% endfor %}
+  </ul>
+</div>
+<div>
+  <a href="/cfg/input">excel 파일 업로드</a>
+</div>

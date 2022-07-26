@@ -1,0 +1,99 @@
+{% extends "defaultLayout.html"  %}
+
+{% block content %}
+<nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
+  <div class="container-fluid py-1 px-3">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+        <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Pages</a></li>
+        <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Lab Copy</li>
+      </ol>
+      <h6 class="font-weight-bolder mb-0">Lab Copy</h6>
+    </nav>        
+  </div>
+</nav>
+<!-- End Navbar -->
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card my-4">
+        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+          <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+            <h6 class="text-white text-capitalize ps-3">Lab Copy - {{ lanName }}</h6>
+          </div>
+        </div>
+        <div class="card-body px-0 pb-2">
+          <div class="table-responsive p-0">
+            <div class="card card-plain">
+            <div class="card-body">
+            <form role="form" name="nodeFrm" id="nodeFrm" method="post" onsubmit="return false;">
+            <div class="input-group input-group-outline mb-3">
+              <label for="labName">Lab Name</label>&nbsp;: &nbsp;
+              <input type="text" class="form-control" name="labName" value="">
+            </div>
+          {% for item in labItems %}
+          <input type="hidden" name="type" value="{{ labItems[item].type }}">
+          <input type="hidden" name="template" value="{{ labItems[item].template }}">
+          <input type="hidden" name="config" value="{{ labItems[item].id }}">
+          <input type="hidden" name="delay" value="{{ labItems[item].delay }}">
+          <input type="hidden" name="ram" value="{{ labItems[item].ram }}">
+          <input type="hidden" name="console" value="{{ labItems[item].console }}">
+          <input type="hidden" name="cpu" value="{{ labItems[item].cpu }}">
+          <input type="hidden" name="ethernet" value="{{ labItems[item].ethernet }}">
+          <input type="hidden" name="uuid" value="{{ labItems[item].uuid }}">
+
+
+
+          <div class="input-group input-group-outline mb-3">
+            <label for="nodeNo">Node No</label>&nbsp;: &nbsp;{{ labItems[item].id }}
+            <!-- <input type="text" class="form-control" name="nodeNo" value="{{ labItems[item].id }}">--><br> 
+          </div>
+          <div class="input-group input-group-outline mb-3">
+            <label for="nodeName">Node Name</label>&nbsp; : &nbsp;
+            <input type="text" class="form-control" name="nodeName" value="{{ labItems[item].name }}"><br>
+          </div>
+          <div class="input-group input-group-outline mb-3">
+            <label for="nodeIcon">Node Icon</label>&nbsp; : &nbsp;
+            <select name="nodeIcon">
+              {% for i in iconItems %}
+              <option value="{{ iconItems[i] }}" {% if iconItems[i] == labItems[item].icon %}selected{% endif %}>{{ iconItems[i] }}</option>
+              {% endfor %}
+            </select>
+            <br>
+          </div>
+          <div class="input-group input-group-outline mb-3">
+            <label for="nodeImage">Node Image</label>&nbsp;: &nbsp;
+            <select name="nodeImage">
+              {% for i in imgItems %}
+              <option value="{{ imgItems[i] }}" {% if imgItems[i] == labItems[item].image %}selected{% endif %}>{{ imgItems[i] }}</option>
+              {% endfor %}
+            </select>            
+          </div>
+
+          <div class="input-group input-group-outline mb-3">
+            <label for="nodeLeft">left</label>&nbsp; : &nbsp;
+            <input type="text" class="form-control" name="nodeLeft" value="{{ labItems[item].left }}"><br>
+          </div>
+
+          <div class="input-group input-group-outline mb-3">
+            <label for="nodeTop">top</label>&nbsp; : &nbsp;
+            <input type="text" class="form-control" name="nodeTop" value="{{ labItems[item].top }}"><br>
+          </div>
+          
+          <p>=============================================</p>
+          {% endfor %}
+            </form>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer py-4  ">
+    
+  </footer>
+</div>
+
+{% endblock %}
