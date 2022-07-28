@@ -3,7 +3,7 @@ router_bgp:
   router_id: 1.1.1.202
   bgp_defaults:
   - no bgp default ipv4-unicast
-  - maximum-paths 4 ecmp 4
+  - maximum-paths 8 ecmp 8
   peer_groups:
     UNDERLAY:
       type: ipv4
@@ -184,22 +184,27 @@ loopback_interfaces:
     shutdown: false
     ip_address: 1.1.1.202/32
 prefix_lists:
-  PL-LOOPBACKS-EVPN-OVERLAY:
-    sequence_numbers:
-      10:
-        action: permit 1.1.1.200/30 eq 32
+- name: Loopback
+  sequence_numbers:
+  - sequence: 10
+    action: permit 1.1.1.0/24 eq 32
 route_maps:
-  RM-CONN-2-BGP:
-    sequence_numbers:
-      10:
-        type: permit
-        match:
-        - ip address prefix-list PL-LOOPBACKS-EVPN-OVERLAY
+- name: Loopback
+  sequence_numbers:
+  - sequence: 10
+    type: permit
+    match:
+    - ip address prefix-list Loopback
 router_bfd:
   multihop:
     interval: 1200
     min_rx: 1200
     multiplier: 3
+peer_filters:
+- name: Leaf-Ass
+  sequence_numbers:
+  - sequence: 10
+    match: as-range 65001-65200 result accept
 ntp:
   local_interface:
     name: Management1

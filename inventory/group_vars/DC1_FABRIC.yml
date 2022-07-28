@@ -39,10 +39,7 @@ l2leaf:
 l3leaf:
   defaults:
     bgp_defaults:
-    - distance bgp 20 200 200
     - no bgp default ipv4-unicast
-    - graceful-restart restart-time 300
-    - graceful-restart
     loopback_ipv4_offset: 0
     loopback_ipv4_pool: 1.1.1.0/24
     mlag_interfaces:
@@ -124,20 +121,36 @@ l3leaf:
           - Ethernet4
 leaf_bgp_defaults:
 - update wait-install
-- distance bgp 20 200 200
 - no bgp default ipv4-unicast
 leaf_peer_l3: 10.255.251.0/24
 mlag_peer: 10.255.252.0/24
 p2p_uplinks_mtu: 1500
 spine:
   defaults:
-    bgp_as: '65000'
+    bgp_as: 65000
     bgp_defaults:
     - no bgp default ipv4-unicast
     loopback_ipv4_pool: 1.1.1.200/30
     mlag_peer_ipv4_pool: 10.255.252.0/24
     mlag_peer_l3_ipv4_pool: 10.255.251.0/24
+    peer_filters:
+    - name: Leaf-Ass
+      sequence_numbers:
+      - match: as-range 65001-65200 result accept
+        sequence: 10
     platform: vEOS
+    prefix_lists:
+    - name: Loopback
+      sequence_numbers:
+      - action: permit 1.1.1.0/24 eq 32
+        sequence: 10
+    route_maps:
+    - name: Loopback
+      sequence_numbers:
+      - match:
+        - ip address prefix-list Loopback
+        sequence: 10
+        type: permit
   nodes:
     Spine-01:
       id: 1

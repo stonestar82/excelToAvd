@@ -45,3 +45,5 @@ class GenernalConfiguration():
     self.timeZone = "Time Zone"
     self.iproute = "IP Route"
     self.spanningTreeMode = "Spanning-tree Mode"
+    self.bgpMaximumPaths ="BGP maximum-paths"
+    self.bgpEcmp = "BGP ecmp"

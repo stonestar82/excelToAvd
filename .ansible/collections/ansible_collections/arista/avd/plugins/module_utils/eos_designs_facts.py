@@ -1033,6 +1033,27 @@ class EosDesignsFacts:
         return get(self._switch_data_combined, "inband_management_subnet")
 
     @cached_property
+    def peer_filters(self):
+        """
+        peer filters 기능 추가 2022.07.27
+        """
+        return get(self._switch_data_combined, "peer_filters")
+
+    @cached_property
+    def prefix_lists(self):
+        """
+        ip prefix 기능 추가 2022.07.27
+        """
+        return get(self._switch_data_combined, "prefix_lists")
+
+    @cached_property
+    def route_maps(self):
+        """
+        route map 기능 추가 2022.07.27
+        """
+        return get(self._switch_data_combined, "route_maps")
+
+    @cached_property
     def inband_management_role(self):
         if self.inband_management_subnet is not None and self.uplink_type == 'port-channel':
             return "child"

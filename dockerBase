@@ -1,0 +1,13 @@
+# Dockerfile
+FROM ubuntu:22.04
+RUN apt update
+RUN apt install software-properties-common -y
+RUN apt-add-repository ppa:ansible/ansible
+# 아파치 설치
+RUN apt install apache2 python2.7 python3.10 wget curl isc-dhcp-server net-tools gcc -y
+ENV APACHE_RUN_USER www-data
+ENV APACHE_RUN_GROUP www-data
+ENV APACHE_LOG_DIR /var/log/apache2
+ENV APACHE_PID_FILE  /var/run/apache2/apache2.pid 
+RUN wget https://bootstrap.pypa.io/pip/2.7/get-pip.py
+RUN python2.7 get-pip.py

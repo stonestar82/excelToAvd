@@ -35,7 +35,9 @@ def parseGeneralInfo(inventory_file):
 		gc.bannerLogin: "banner_login",
 		gc.timeZone: "time_zone",
 		gc.spanningTreeMode: "spanning_tree_mode",
-		gc.iproute: "ip_route"
+		gc.iproute: "ip_route",
+		gc.bgpMaximumPaths: "bgp_maximum_paths",
+		gc.bgpEcmp: "bgp_ecmp"
 	}
 
 	workbook = xlrd.open_workbook(inventory_file)
@@ -146,6 +148,8 @@ def parseGeneralInfo(inventory_file):
 	# Group Vars all.yml 파일 생성
 	terminalLength = int(info["terminal_length"]) if type(info["terminal_length"]) == float else info["terminal_length"]
 	termninalWidth = int(info["terminal_width"]) if type(info["terminal_width"]) == float else info["terminal_width"]
+	bgp_maximum_paths = int(info["bgp_maximum_paths"]) if type(info["bgp_maximum_paths"]) == float else info["bgp_maximum_paths"]
+	bgp_ecmp = int(info["bgp_ecmp"]) if type(info["bgp_ecmp"]) == float else info["bgp_ecmp"]
 	data = {
 		"terminal_length": terminalLength,
 		"terminal_width": termninalWidth,
@@ -153,7 +157,9 @@ def parseGeneralInfo(inventory_file):
 		"timezone": info["time_zone"],
 		"ip_route": info["ip_route"],
 		"default_mgmt": info["mgmt_interface_vrf"],
-		"banner_login": info["banner_login"]
+		"banner_login": info["banner_login"],
+		"bgp_maximum_paths": bgp_maximum_paths,
+		"bgp_ecmp": bgp_ecmp
 	}
 	
 	with open('./templates/allyml.j2') as f:

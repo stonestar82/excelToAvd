@@ -80,3 +80,16 @@
 {%     include 'network_services/virtual-source-nat-vrfs.j2' %}
 
 {% endif %}
+
+{# peer filter 추가(eos_config_gen에는 peer filer가 있으니 eos_design에는 peer_filter가 없음) 2022.07.27#}
+{% if switch.peer_filters is arista.avd.defined %}
+peer_filters:
+{%    for peer_filter in switch.peer_filters | arista.avd.convert_dicts('name') | arista.avd.natural_sort('name') %}
+- name: {{ peer_filter.name }}
+  sequence_numbers:
+{%          for sequence in peer_filter.sequence_numbers %}
+  - sequence: {{ sequence.sequence }}
+    match:  {{ sequence.match }}
+{%          endfor%}
+{%    endfor%}
+{% endif%}

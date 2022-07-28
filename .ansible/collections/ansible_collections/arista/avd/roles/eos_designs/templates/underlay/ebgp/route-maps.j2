@@ -1,4 +1,5 @@
 {# Leaf and Spine route-maps for the underlay#}
+{##### 기능 변경 2022.07.27
 route_maps:
   RM-CONN-2-BGP:
     sequence_numbers:
@@ -6,10 +7,28 @@ route_maps:
         type: permit
         match:
           - "ip address prefix-list PL-LOOPBACKS-EVPN-OVERLAY"
-{# SEQ 20 is set by inband management if applicable, so avoid setting that here #}
+{# SEQ 20 is set by inband management if applicable, so avoid setting that here 
 {% if switch.underlay_ipv6 is arista.avd.defined(true) %}
       30:
         type: permit
         match:
           - "ipv6 address prefix-list PL-LOOPBACKS-EVPN-OVERLAY-V6"
+{% endif %}
+#####}
+{% if switch.route_maps is arista.avd.defined %}
+route_maps:
+{%    for route_map in switch.route_maps | arista.avd.convert_dicts('name') | arista.avd.natural_sort('name') %}
+{%        for sequence in route_map.sequence_numbers | arista.avd.convert_dicts('sequence') | arista.avd.natural_sort('sequence') %}
+{%            if sequence.type is arista.avd.defined %}
+- name: {{ route_map.name }}
+  sequence_numbers:
+  - sequence: {{ sequence.sequence }}
+    type: {{ sequence.type }}   
+{%            endif %}
+    match:
+{%            for match_rule in sequence.match | arista.avd.natural_sort %}
+    - {{ match_rule }}
+{%            endfor %}
+{%        endfor %}
+{%    endfor %}
 {% endif %}

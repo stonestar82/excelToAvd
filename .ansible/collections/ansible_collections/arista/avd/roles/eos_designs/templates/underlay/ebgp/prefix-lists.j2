@@ -1,4 +1,5 @@
 {# prefix-lists #}
+{##### 기능 변경 2022.07.27 
 prefix_lists:
   PL-LOOPBACKS-EVPN-OVERLAY:
     sequence_numbers:
@@ -11,4 +12,18 @@ prefix_lists:
       30:
         action: "permit {{ vtep_vvtep_ip }}"
 {%     endif %}
+{% endif %}
+######}
+{% if switch.prefix_lists is arista.avd.defined %}
+prefix_lists:
+{%    for prefix_list in switch.prefix_lists | arista.avd.convert_dicts('name') | arista.avd.natural_sort('name') %}
+- name: {{ prefix_list.name }}
+{%        for sequence in prefix_list.sequence_numbers | arista.avd.convert_dicts('sequence') | arista.avd.natural_sort('sequence') %}
+{%            if sequence.action is arista.avd.defined %}
+  sequence_numbers: 
+  - sequence: {{ sequence.sequence }}
+    action: {{ sequence.action }}
+{%            endif %}
+{%        endfor %}
+{%    endfor %}
 {% endif %}

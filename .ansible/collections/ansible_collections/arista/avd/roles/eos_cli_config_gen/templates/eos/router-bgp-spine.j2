@@ -28,16 +28,6 @@ router bgp {{ router_bgp.as }}
 {%           if peer_group.remote_as is arista.avd.defined %}
    neighbor {{ peer_group.name }} remote-as {{ peer_group.remote_as }}
 {%           endif %}
-{%           if peer_group.maximum_routes is arista.avd.defined %}
-{%             set maximum_routes_cli = "neighbor " ~ peer_group.name ~ " maximum-routes " ~ peer_group.maximum_routes %}
-{%             if peer_group.maximum_routes_warning_limit is arista.avd.defined %}
-{%                 set maximum_routes_cli = maximum_routes_cli ~ " warning-limit " ~ peer_group.maximum_routes_warning_limit %}
-{%             endif %}
-{%             if peer_group.maximum_routes_warning_only is arista.avd.defined(true) %}
-{%                 set maximum_routes_cli = maximum_routes_cli ~ " warning-only" %}
-{%             endif %}
-   {{ maximum_routes_cli }}
-{%           endif %}
 {%         endif %}
 {%     endfor %}
    redistribute connected route-map Loopback

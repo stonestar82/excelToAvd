@@ -1,4 +1,5 @@
 from operator import eq, ne
+from pprint import pprint
 import xlrd
 import json, yaml, re
 from collections import OrderedDict
@@ -323,7 +324,17 @@ def parseSpineInfo(inventory_file):
 		spine.uplinkSwitches: "uplink_switches",
 		spine.uplinkSwitchInterfaces: "uplink_switch_interfaces",
 		spine.uplinkInterfaces: "uplink_interfaces",
-		spine.superSpine: "super_spine"
+		spine.superSpine: "super_spine",
+		spine.peerFilterName: "peer_filter_name",
+		spine.peerFilterSequenceNumber: "peer_filter_sequence_number",
+		spine.peerFilterMatch: "peer_filter_match",
+		spine.prefixName: "prefix_name",
+		spine.prefixSequenceNumber: "prefix_sequence_number",
+		spine.prefixAction: "prefix_action",
+		spine.routeMapName: "route_map_name",
+		spine.routeMapType: "route_map_type",
+		spine.routeMapSequence: "route_map_sequence",
+		spine.routeMapMatch: "route_map_match"
 	}
 	
 	workbook = xlrd.open_workbook(inventory_file)
@@ -365,7 +376,51 @@ def parseSpineInfo(inventory_file):
 				v = int(v) if type(v) == float else v
 				spine_yaml["defaults"][configuration_variable_mappers[k]] = v
 
-	
+	##### Peer Filter 처리 S #####
+	if ne("", spine_yaml["defaults"]["peer_filter_name"]) and ne("", spine_yaml["defaults"]["peer_filter_sequence_number"]) and ne("", spine_yaml["defaults"]["peer_filter_match"]):
+		spine_yaml["defaults"]["peer_filters"] = [{
+				"name" : spine_yaml["defaults"]["peer_filter_name"],
+				"sequence_numbers" : [{
+					"sequence": spine_yaml["defaults"]["peer_filter_sequence_number"],
+					"match": spine_yaml["defaults"]["peer_filter_match"]
+				}]
+			}]
+		
+	del(spine_yaml["defaults"]["peer_filter_name"])
+	del(spine_yaml["defaults"]["peer_filter_sequence_number"])
+	del(spine_yaml["defaults"]["peer_filter_match"])
+	##### Peer Filter 처리 E #####
+
+	##### Prefix 처리 S #####
+	if ne("", spine_yaml["defaults"]["prefix_name"]) and ne("", spine_yaml["defaults"]["prefix_sequence_number"]) and ne("", spine_yaml["defaults"]["prefix_action"]):
+		spine_yaml["defaults"]["prefix_lists"] = [{
+				"name" : spine_yaml["defaults"]["prefix_name"],
+				"sequence_numbers" : [{
+					"sequence": spine_yaml["defaults"]["prefix_sequence_number"],
+					"action": spine_yaml["defaults"]["prefix_action"]
+				}]
+			}]
+	del(spine_yaml["defaults"]["prefix_name"])
+	del(spine_yaml["defaults"]["prefix_sequence_number"])
+	del(spine_yaml["defaults"]["prefix_action"])
+	##### Prefix 처리 E #####
+
+	##### Route Map 처리 S #####
+	if ne("", spine_yaml["defaults"]["route_map_name"]) and ne("", spine_yaml["defaults"]["route_map_type"]) and ne("", spine_yaml["defaults"]["route_map_sequence"]) and ne("", spine_yaml["defaults"]["route_map_match"]):
+		spine_yaml["defaults"]["route_maps"] = [{
+				"name" : spine_yaml["defaults"]["route_map_name"],
+				"sequence_numbers" : [{
+					"sequence": spine_yaml["defaults"]["route_map_sequence"],
+					"type": spine_yaml["defaults"]["route_map_type"],
+					"match": [spine_yaml["defaults"]["route_map_match"]]
+				}]
+			}]
+	del(spine_yaml["defaults"]["route_map_name"])
+	del(spine_yaml["defaults"]["route_map_type"])
+	del(spine_yaml["defaults"]["route_map_sequence"])
+	del(spine_yaml["defaults"]["route_map_match"])
+	##### Route Map E #####
+
 	spine_yaml["defaults"]["bgp_defaults"] = parseSpineBGPDefaults(inventory_file)
 
 	return spine_yaml
@@ -390,12 +445,14 @@ def parseLeafBGPDefaults(inventory_file):
 			v = convertToBoolIfNeeded(v)
 			bgp_defaults[configuration_variable_mappers[k]] = v
 
-	if ne(bgp_defaults["bgp_graceful_restart_time"], ""):
-		v = bgp_defaults["bgp_graceful_restart_time"]
-		v = int(v) if type(v) == float else v
-		v = str(v)
-		bgp_defaults["bgp_graceful_restart_time"] = "graceful-restart restart-time " + v
+			if eq(l3leafDetail.bgpGracefulRestartTime, k):
+				# print("graceful-restart restart-time !!")
+				v = bgp_defaults[configuration_variable_mappers[k]]
+				v = int(v) if type(v) == float else v
+				v = str(v)
+				bgp_defaults[configuration_variable_mappers[k]] = "graceful-restart restart-time " + v
 
+	
 	bgp_defaults_list = []
 	config_values = {
 		"bgp_default_ipv4_unicast":
@@ -425,7 +482,7 @@ def parseSpineBGPDefaults(inventory_file):
 		spineDetail.bgpWaitForConvergence:"update_wait_for_convergence", 
 		spineDetail.bgpWaitInstall: "wait_install", 
 		spineDetail.bgpDistanceSetting:"distance_setting", 
-		spineDetail.bgpDefaultIpv4Unicast: "ipv4_unicast"
+		spineDetail.bgpDefaultIpv4Unicast: "ipv4_unicast",
 	}
 	workbook = xlrd.open_workbook(inventory_file)
 	spine_defaults_worksheet = workbook.sheet_by_name(spineDetail.sheetName)

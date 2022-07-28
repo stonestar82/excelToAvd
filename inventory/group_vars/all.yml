@@ -24,3 +24,7 @@ vrfs:
 ## banner login
 banners:
   login: "***********************************************************************\nGlobalTelecom and Arista Networks\n***********************************************************************\nEOF"
+
+## BGP maximum path & ecmp
+bgp_maximum_paths: 8
+bgp_ecmp: 8
