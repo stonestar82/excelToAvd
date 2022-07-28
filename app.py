@@ -5,6 +5,10 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__, template_folder="static/templates")
 
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 @app.route("/")
 def index():
 
@@ -48,5 +52,6 @@ def configUpload():
   f.save(secure_filename(f.filename))
 
   return "파일이 저장되었습니다."
-    
-# app.run(port=80) 
+
+if __name__ == "__main__":
+  app.run() 
