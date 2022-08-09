@@ -41,8 +41,7 @@ def switch(switch):
 
 @app.route("/cfgs/<switch>")
 def cfg(switch): 
-
-  return send_from_directory(directory='./inventory/intended/configs/', filename=switch)
+  return send_from_directory(directory='./inventory/intended/configs/', filename=secure_filename(switch))
 
 
 @app.route("/cfg/input")
