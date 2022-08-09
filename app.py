@@ -39,7 +39,13 @@ def read(switch):
 
 @app.route("/cfgs/<switch>")
 def cfgs(switch):
-  return send_from_directory('./inventory/intended/configs/' + secure_filename(switch))
+  try:
+    with open('./inventory/intended/configs/' + secure_filename(switch) + '.cfg', encoding="UTF-8") as f:
+      cfg = f.readlines()
+  except FileNotFoundError:
+      cfg = ["설정파일이 없습니다."]
+
+  return "\n".join(cfg)
 
 @app.route("/cfg/input")
 def configInput():
