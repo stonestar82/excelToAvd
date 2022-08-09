@@ -47,7 +47,7 @@ def configInput():
 def configUpload(): 
 
   f = request.files["cfg_file"]
-  f.save("./inventory/upload/" + secure_filename(f.filename))
+  f.save("/avd/upload/" + secure_filename(f.filename))
 
   return "파일이 저장되었습니다."
 
