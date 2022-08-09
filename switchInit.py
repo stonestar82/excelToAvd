@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from logging import exception
-from tkinter import E
-from turtle import delay
 from src.process.SwitchIdentification import SwitchIdentification
 from src.domain.Switch import Switch
 import json
