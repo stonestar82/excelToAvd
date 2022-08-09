@@ -2,9 +2,6 @@ from flask import Flask, send_from_directory, render_template, request
 import os
 from werkzeug.utils import secure_filename
 
-from domain.Switch import Switch
-
-
 app = Flask(__name__, template_folder="static/templates")
 
 import logging
