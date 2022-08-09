@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, render_template, request
+from flask import Flask, send_from_directory, render_template, request, blueprints
 import os
 from werkzeug.utils import secure_filename
 
@@ -27,8 +27,8 @@ def index():
   return render_template('switchList.html', switchList=switchList)
 
 
-@app.route("/cfgs/<switch>")
-def read(switch): 
+@app.route("/switch/<switch>")
+def switch(switch): 
 
   try:
     with open('./inventory/intended/configs/' + switch + '.cfg', encoding="UTF-8") as f:
@@ -37,6 +37,12 @@ def read(switch):
       cfg = ["설정파일이 없습니다."]
 
   return render_template('cfg.html', cfg=cfg)
+
+
+@app.route("/cfgs/<switch>")
+def cfg(switch): 
+
+  return send_from_directory(directory='./inventory/intended/configs/', filename=switch)
 
 
 @app.route("/cfg/input")

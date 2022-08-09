@@ -66,8 +66,7 @@ class SwitchIdentification():
     # self.connect.send_command("bash sudo mv " + fileName + " /mnt/flash/startup-config")
     # self.connect.send_command("wr")
 
-    print("bash sudo wget " + url + "/cfgs/" + fileName)
-    print("bash sudo mv " + fileName + " /mnt/flash/startup-config")
+    print("bash sudo wget " + url + "/cfgs/" + fileName + " -O /mnt/flash/startup-config")
 
   ## reboot
   def reboot(self):
