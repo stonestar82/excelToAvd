@@ -62,8 +62,8 @@ class SwitchIdentification():
 
   ## config 다운로드
   def configDownload(self, url, fileName):
-    self.connect.send_command("bash sudo wget " + url + "/cfgs/" + fileName)
-    self.connect.send_command("bash sudo mv " + fileName + " /mnt/flash/startup-config")
+    self.connect.send_command("bash sudo wget " + url + "/cfgs/" + fileName + " -O /mnt/flash/startup-config")
+    # self.connect.send_command("bash sudo mv " + fileName + " /mnt/flash/startup-config")
     # self.connect.send_command("wr")
 
     print("bash sudo wget " + url + "/cfgs/" + fileName)
