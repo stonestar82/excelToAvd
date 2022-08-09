@@ -31,7 +31,7 @@ def index():
 def read(switch): 
 
   try:
-    with open('./inventory/intended/configs/' + switch + '.cfg') as f:
+    with open('./inventory/intended/configs/' + switch + '.cfg', encoding="UTF-8") as f:
       cfg = f.readlines()
   except FileNotFoundError:
       cfg = ["설정파일이 없습니다."]
