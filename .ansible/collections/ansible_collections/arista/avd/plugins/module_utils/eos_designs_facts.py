@@ -748,6 +748,10 @@ class EosDesignsFacts:
                         get(self._hostvars, "bgp_peer_groups.ipv4_underlay_peers.peer_filter"),
                         get(self._hostvars, "bgp_peer_groups.IPv4_UNDERLAY_PEERS.peer_filter")
                     ),
+                    "remote_as": default(
+                        get(self._hostvars, "bgp_peer_groups.ipv4_underlay_peers.remote_as"),
+                        get(self._hostvars, "bgp_peer_groups.IPv4_UNDERLAY_PEERS.remote_as")
+                    )
                 },
                 "mlag_ipv4_underlay_peer": {
                     "name": default(
@@ -765,6 +769,18 @@ class EosDesignsFacts:
                         get(self._hostvars, "bgp_peer_groups.evpn_overlay_peers.name"),
                         get(self._hostvars, "bgp_peer_groups.EVPN_OVERLAY_PEERS.name"),
                         "EVPN-OVERLAY-PEERS"
+                    ),
+                    "bgp_listen_range_prefix": default(
+                        get(self._hostvars, "bgp_peer_groups.evpn_overlay_peers.bgp_listen_range_prefix"),
+                        get(self._hostvars, "bgp_peer_groups.EVPN_OVERLAY_PEERS.bgp_listen_range_prefix")
+                    ),
+                    "peer_filter": default(
+                        get(self._hostvars, "bgp_peer_groups.evpn_overlay_peers.peer_filter"),
+                        get(self._hostvars, "bgp_peer_groups.EVPN_OVERLAY_PEERS.peer_filter")
+                    ),
+                    "remote_as": default(
+                        get(self._hostvars, "bgp_peer_groups.evpn_overlay_peers.remote_as"),
+                        get(self._hostvars, "bgp_peer_groups.EVPN_OVERLAY_PEERS.remote_as")
                     ),
                     "password": default(
                         get(self._hostvars, "bgp_peer_groups.evpn_overlay_peers.password"),
@@ -1047,11 +1063,25 @@ class EosDesignsFacts:
         return get(self._switch_data_combined, "prefix_lists")
 
     @cached_property
+    def remote_as(self):
+        """
+        remote-as 기능 추가 2022.07.29
+        """
+        return get(self._switch_data_combined, "remote_as")
+
+    @cached_property
     def route_maps(self):
         """
         route map 기능 추가 2022.07.27
         """
         return get(self._switch_data_combined, "route_maps")
+
+    @cached_property
+    def route_maps(self):
+        """
+        p2p ipv4 pool 기능 추가 2022.08.03
+        """
+        return get(self._switch_data_combined, "p2p_ipv4_pool")
 
     @cached_property
     def inband_management_role(self):

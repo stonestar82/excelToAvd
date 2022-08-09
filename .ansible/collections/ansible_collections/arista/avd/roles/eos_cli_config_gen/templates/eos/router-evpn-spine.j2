@@ -1,0 +1,37 @@
+{# eos - Router BGP #}
+{% set peerGroupName = ""%}
+{% if router_bgp.as is arista.avd.defined %}
+!
+router bgp {{ router_bgp.as }}
+{%     for peer_group in router_bgp.peer_groups | arista.avd.convert_dicts('name') | arista.avd.natural_sort('name') %}
+{%         if peer_group.type == "evpn"    %}
+{%             if peer_group.bgp_listen_range_prefix is arista.avd.defined and peer_group.peer_filter is arista.avd.defined %}
+   bgp listen range {{ peer_group.bgp_listen_range_prefix }} peer-group {{ peer_group.name }} peer-filter {{ peer_group.peer_filter }}
+{%             endif %}
+   neighbor {{ peer_group.name }} peer group
+{%             if peer_group.next_hop_unchanged is arista.avd.defined(true) %}
+   neighbor EVPN next-hop-unchanged
+{%             endif %}
+{%             if peer_group.update_source is arista.avd.defined %}
+   neighbor {{ peer_group.name }} update-source {{ peer_group.update_source }}
+{%             endif %}
+{%             if peer_group.bfd is arista.avd.defined(true) %}
+   neighbor EVPN bfd
+{%             endif %}
+{%             if peer_group.ebgp_multihop is arista.avd.defined %}
+   neighbor {{ peer_group.name }} ebgp-multihop {{ peer_group.ebgp_multihop }}
+{%             endif %}
+{%             if peer_group.send_community is arista.avd.defined %}
+   neighbor {{ peer_group.name }} send-community
+{%             endif %}
+{%             if peer_group.maximum_routes is arista.avd.defined %}
+{%             set maximum_routes_cli = "neighbor " ~ peer_group.name ~ " maximum-routes " ~ peer_group.maximum_routes %}
+   {{ maximum_routes_cli }}
+{%             endif %}
+   !
+   address-family evpn
+      neighbor {{ peer_group.name }} activate
+{%         endif %}
+{%     endfor %}
+{# address family ipv4 activation #}
+{% endif %}

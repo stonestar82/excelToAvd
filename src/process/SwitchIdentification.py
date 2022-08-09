@@ -48,13 +48,30 @@ class SwitchIdentification():
     ## 스위치 순서 확인
     ## eth1포트 lldp의 포트에따라 정해진다. 
     lldpPort = data.get("lldpNeighbors").get("Ethernet1").get("lldpNeighborInfo")[0].get("neighborInterfaceInfo").get("interfaceId_v2").replace("Ethernet", "")
-    self.switch.hostname = "DC1-" + self.switch.type.upper() + lldpPort
+    # self.switch.hostname = self.switch.type.upper() + lldpPort
+    if eq("spine", self.switch.type):
+      self.switch.hostname = "Spine-0" + lldpPort
+    else:
+      self.switch.hostname = "Leaf-0" + lldpPort
 
   ## lldp 
   def lldpScan(self):
     data = self.connect.send_command("show lldp neighbors detail | json")
 
     return json.loads(data)
+
+  ## config 다운로드
+  def configDownload(self, url, fileName):
+    # self.connect.send_command("bash sudo wget " + url + "/" + fileName)
+    # self.connect.send_command("bash sudo mv " + fileName + "/mnt/flash/startup-config")
+
+    print("bash sudo wget " + url + "/" + fileName)
+    print("bash sudo mv " + fileName + " /mnt/flash/startup-config")
+
+  ## reboot
+  def reboot(self):
+    self.connect.send_command("bash sudo shutdown -r 1")
+    print("bash sudo shutdown -r 1")
 
   def disconnect(self):
     self.connect.disconnect()

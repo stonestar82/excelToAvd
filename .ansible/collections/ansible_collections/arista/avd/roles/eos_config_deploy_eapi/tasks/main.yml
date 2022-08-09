@@ -69,7 +69,7 @@
   notify: "backup config"
   tags: [base]
 
-- name: replace configuration(BGP) with intended configuration
+- name: bgp cfg 배포
   eos_config:
     src: "{{ eos_config_dir }}/{{ inventory_hostname }}.cfg"
     replace: line
@@ -80,3 +80,27 @@
       dir_path: "{{ pre_running_config_backup_dir }}"
   notify: "backup config"
   tags: [bgp]
+
+- name: evpn cfg 배포
+  eos_config:
+    src: "{{ eos_config_dir }}/{{ inventory_hostname }}.cfg"
+    replace: line
+    save_when: modified
+    backup: "{{ eos_config_deploy_eapi_pre_running_config_backup }}"
+    backup_options:
+      filename: "evpn_{{ pre_running_config_backup_filename }}"
+      dir_path: "{{ pre_running_config_backup_dir }}"
+  notify: "backup config"
+  tags: [evpn]
+
+- name: vxlan cfg 배포
+  eos_config:
+    src: "{{ eos_config_dir }}/{{ inventory_hostname }}.cfg"
+    replace: line
+    save_when: modified
+    backup: "{{ eos_config_deploy_eapi_pre_running_config_backup }}"
+    backup_options:
+      filename: "vxlan_{{ pre_running_config_backup_filename }}"
+      dir_path: "{{ pre_running_config_backup_dir }}"
+  notify: "backup config"
+  tags: [vxlan]

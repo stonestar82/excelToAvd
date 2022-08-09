@@ -156,6 +156,13 @@ def parseL3LeafInfo(inventory_file):
 		l3leafDetail.virtualRouterMacAddress:"virtual_router_mac_address",
 		l3leafDetail.spanningTreeMode:"spanning_tree_mode", 
 		l3leafDetail.spanningTreePriority:"spanning_tree_priority",
+		l3leafDetail.prefixName: "prefix_name",
+		l3leafDetail.prefixSequenceNumber: "prefix_sequence_number",
+		l3leafDetail.prefixAction: "prefix_action",
+		l3leafDetail.routeMapName: "route_map_name",
+		l3leafDetail.routeMapType: "route_map_type",
+		l3leafDetail.routeMapSequence: "route_map_sequence",
+		l3leafDetail.routeMapMatch: "route_map_match"
 	}
 
 	l3_leaf_info = {}
@@ -226,6 +233,47 @@ def parseL3LeafInfo(inventory_file):
 	# print(json.dumps(defaults, indent=2))
 	l3_yaml["defaults"] = defaults
 	l3_yaml["node_groups"] = consolidateNodeGroups(node_groups)
+
+	##### Prefix 처리 S #####
+	if ne("", l3_yaml["defaults"]["prefix_name"]) and ne("", l3_yaml["defaults"]["prefix_sequence_number"]) and ne("", l3_yaml["defaults"]["prefix_action"]):
+		
+		prefix_name = [iface.strip() for iface in l3_yaml["defaults"]["prefix_name"].split(",") if iface] if l3_yaml["defaults"]["prefix_name"] != "" else None
+		prefix_sequence_number = [iface.strip() for iface in str(l3_yaml["defaults"]["prefix_sequence_number"]).split(",") if iface] if l3_yaml["defaults"]["prefix_sequence_number"] != "" else None
+		prefix_action = [iface.strip() for iface in l3_yaml["defaults"]["prefix_action"].split(",") if iface] if l3_yaml["defaults"]["prefix_action"] != "" else None
+
+		item = []
+		for i in range(0, len(prefix_name)):
+			item.append({
+				"name" : prefix_name[i],
+				"sequence_numbers" : [{
+					"sequence": prefix_sequence_number[i],
+					"action": prefix_action[i]
+				}]
+			})
+
+		l3_yaml["defaults"]["prefix_lists"] = item
+
+
+	del(l3_yaml["defaults"]["prefix_name"])
+	del(l3_yaml["defaults"]["prefix_sequence_number"])
+	del(l3_yaml["defaults"]["prefix_action"])
+	##### Prefix 처리 E #####
+
+	##### Route Map 처리 S #####
+	if ne("", l3_yaml["defaults"]["route_map_name"]) and ne("", l3_yaml["defaults"]["route_map_type"]) and ne("", l3_yaml["defaults"]["route_map_sequence"]) and ne("", l3_yaml["defaults"]["route_map_match"]):
+		l3_yaml["defaults"]["route_maps"] = [{
+				"name" : l3_yaml["defaults"]["route_map_name"],
+				"sequence_numbers" : [{
+					"sequence": l3_yaml["defaults"]["route_map_sequence"],
+					"type": l3_yaml["defaults"]["route_map_type"],
+					"match": [l3_yaml["defaults"]["route_map_match"]]
+				}]
+			}]
+	del(l3_yaml["defaults"]["route_map_name"])
+	del(l3_yaml["defaults"]["route_map_type"])
+	del(l3_yaml["defaults"]["route_map_sequence"])
+	del(l3_yaml["defaults"]["route_map_match"])
+	##### Route Map E #####
 	
 	# BGP default 세팅
 	l3_yaml["defaults"]["bgp_defaults"] = parseLeafBGPDefaults(inventory_file)
@@ -531,8 +579,13 @@ def parseGeneralVariables(inventory_file):
 		genernalConfiguration.bgpIpv4UnderlayPeerGroupPassword: "bgp_ipv4_password",
 		genernalConfiguration.bgpIpv4UnderlayPeerFilter: "bgp_ipv4_filter",
 		genernalConfiguration.bgpIpv4UnderlayPrefix: "bgp_ipv4_prefix",
+		genernalConfiguration.bgpIpv4UnderlayRemoteAs: "bgp_ipv4_remoteas",
+		genernalConfiguration.bgpIpv4UnderlayMaximumRoutes: "bgp_ipv4_maximum_routes",
 		genernalConfiguration.bgpEvpnOverlayPeerGroupName: "bgp_evpn_name",
 		genernalConfiguration.bgpEvpnOverlayPeerGroupPassword: "bgp_evpn_password",
+		genernalConfiguration.bgpEvpnOverlayPeerFilter: "bgp_evpn_filter",
+		genernalConfiguration.bgpEvpnOverlayPrefix: "bgp_evpn_prefix",
+		genernalConfiguration.bgpIpv4OverlayRemoteAs: "bgp_evpn_remoteas",
 		genernalConfiguration.bgpMlagIpv4UnderlayGroupPassword: "bgp_mlag_ipv4_password",
 		genernalConfiguration.bgpBfdMultihopInterval: "bfd_interval",
 		genernalConfiguration.bgpBfdMultihopMinRx: "bfd_min_rx",
@@ -561,12 +614,21 @@ def parseGeneralVariables(inventory_file):
 	# }
 
 	general_yaml["bgp_peer_groups"] = {
-		"IPv4_UNDERLAY_PEERS":{ "name": general_yaml["bgp_ipv4_name"], "bgp_listen_range_prefix": general_yaml["bgp_ipv4_prefix"], "peer_filter": general_yaml["bgp_ipv4_filter"], "password": general_yaml["bgp_ipv4_password"]},
-		"EVPN_OVERLAY_PEERS":{ "name": general_yaml["bgp_evpn_name"], "password": general_yaml["bgp_evpn_password"]}
+		"IPv4_UNDERLAY_PEERS":{ "name": general_yaml["bgp_ipv4_name"], "bgp_listen_range_prefix": general_yaml["bgp_ipv4_prefix"], "peer_filter": general_yaml["bgp_ipv4_filter"], "password": general_yaml["bgp_ipv4_password"], "remote_as": general_yaml["bgp_ipv4_remoteas"], "maximum_routes": general_yaml["bgp_ipv4_maximum_routes"]},
+		"EVPN_OVERLAY_PEERS":{ "name": general_yaml["bgp_evpn_name"], "bgp_listen_range_prefix": general_yaml["bgp_evpn_prefix"], "peer_filter": general_yaml["bgp_evpn_filter"], "remote_as": general_yaml["bgp_evpn_remoteas"], "password": general_yaml["bgp_evpn_password"]}
 	}
 
+	del(general_yaml["bgp_ipv4_name"])
+	del(general_yaml["bgp_ipv4_prefix"])
+	del(general_yaml["bgp_ipv4_filter"])
 	del(general_yaml["bgp_ipv4_password"])
+	del(general_yaml["bgp_ipv4_remoteas"])
+	del(general_yaml["bgp_ipv4_maximum_routes"])
+	del(general_yaml["bgp_evpn_name"])
+	del(general_yaml["bgp_evpn_prefix"])
+	del(general_yaml["bgp_evpn_filter"])
 	del(general_yaml["bgp_evpn_password"])
+	del(general_yaml["bgp_evpn_remoteas"])
 	# del(general_yaml["bgp_mlag_ipv4_password"])
 
 	# general_yaml["mlag_ips"] = {

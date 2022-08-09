@@ -2,20 +2,21 @@ bfd_multihop:
   interval: 1200
   min_rx: 1200
   multiplier: 3
-bgp_evpn_name: OVERLAY
-bgp_ipv4_filter: Leaf-Ass
-bgp_ipv4_name: UNDERLAY
-bgp_ipv4_prefix: 100.64.0.0/10
-bgp_mlag_ipv4_password: vnEaG8gMeQf3d3cN6PktXQ==
+bgp_mlag_ipv4_password: null
 bgp_peer_groups:
   EVPN_OVERLAY_PEERS:
-    name: OVERLAY
+    bgp_listen_range_prefix: 1.1.1.0/24
+    name: EVPN
     password: null
+    peer_filter: Leaf-Ass
+    remote_as: 65000
   IPv4_UNDERLAY_PEERS:
     bgp_listen_range_prefix: 100.64.0.0/10
+    maximum_routes: 12000
     name: UNDERLAY
     password: null
     peer_filter: Leaf-Ass
+    remote_as: 65000
 fabric_name: DC1_FABRIC
 l2leaf:
   defaults:
@@ -49,20 +50,36 @@ l3leaf:
     mlag_peer_l3_ipv4_pool: 10.255.251.0/24
     mlag_port_channel_id: 1000
     platform: vEOS
+    prefix_lists:
+    - name: Loopback
+      sequence_numbers:
+      - action: permit 1.1.1.0/24 eq 32
+        sequence: '10'
+    - name: Loopback
+      sequence_numbers:
+      - action: permit 2.2.2.0/24 eq 32
+        sequence: '20'
+    route_maps:
+    - name: Loopback
+      sequence_numbers:
+      - match:
+        - ip address prefix-list Loopback
+        sequence: 10
+        type: permit
     spanning_tree_mode: none
     spanning_tree_priority: 16384
     uplink_interfaces:
     - Ethernet1
     - Ethernet2
-    uplink_ipv4_pool: 172.21.1.0/24
+    uplink_ipv4_pool: 100.100.0.0/30
     uplink_switches:
     - Spine-01
     - Spine-02
     virtual_router_mac_address: 00:1c:73:00:dc:01
-    vtep_loopback_ipv4_pool: 192.168.254.0/24
+    vtep_loopback_ipv4_pool: 2.2.2.0/24
   node_groups:
     DC1_BL:
-      bgp_as: 65105
+      bgp_as: 65005
       mlag_interfaces:
       - Ethernet7
       - Ethernet8
@@ -82,7 +99,7 @@ l3leaf:
     DC1_LEAF1:
       nodes:
         Leaf-01:
-          bgp_as: 65101
+          bgp_as: 65001
           id: 1
           mgmt_ip: 192.168.22.193/24
           mlag: false
@@ -92,7 +109,7 @@ l3leaf:
     DC1_LEAF2:
       nodes:
         Leaf-02:
-          bgp_as: 65102
+          bgp_as: 65002
           id: 2
           mgmt_ip: 192.168.22.194/24
           mlag: false
@@ -102,7 +119,7 @@ l3leaf:
     DC1_LEAF3:
       nodes:
         Leaf-03:
-          bgp_as: 65103
+          bgp_as: 65003
           id: 3
           mgmt_ip: 192.168.22.195/24
           mlag: false
@@ -112,7 +129,7 @@ l3leaf:
     DC1_LEAF4:
       nodes:
         Leaf-04:
-          bgp_as: 65104
+          bgp_as: 65004
           id: 4
           mgmt_ip: 192.168.22.196/24
           mlag: false

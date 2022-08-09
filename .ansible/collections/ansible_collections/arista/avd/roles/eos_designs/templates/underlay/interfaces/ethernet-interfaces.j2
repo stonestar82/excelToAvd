@@ -1,4 +1,6 @@
 {# Underlay P2P interfaces #}
+p2p_ipv4_pool : {{ p2p_ipv4_pool }}
+switch_id : {{ switch.id }}
 ethernet_interfaces:
 {% for link in underlay_data.links | arista.avd.natural_sort('interface') %}
 {# L3 P2P interfaces #}

@@ -30,7 +30,7 @@ def main():
 	#     print("Passwords do not match")
 	#     return
 
-	file_location = "./inventory.xlsx"
+	file_location = "./upload/inventory.xlsx"
 	if file_location is None:
 			print("Please specify a path for the Excel file by using -f. Enter 'python main.py -h' for more details.")
 			return

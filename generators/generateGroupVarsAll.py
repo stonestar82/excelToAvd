@@ -37,7 +37,8 @@ def parseGeneralInfo(inventory_file):
 		gc.spanningTreeMode: "spanning_tree_mode",
 		gc.iproute: "ip_route",
 		gc.bgpMaximumPaths: "bgp_maximum_paths",
-		gc.bgpEcmp: "bgp_ecmp"
+		gc.bgpEcmp: "bgp_ecmp",
+		gc.p2pIpv4Pool: "p2p_ipv4_pool"
 	}
 
 	workbook = xlrd.open_workbook(inventory_file)
@@ -159,7 +160,8 @@ def parseGeneralInfo(inventory_file):
 		"default_mgmt": info["mgmt_interface_vrf"],
 		"banner_login": info["banner_login"],
 		"bgp_maximum_paths": bgp_maximum_paths,
-		"bgp_ecmp": bgp_ecmp
+		"bgp_ecmp": bgp_ecmp,
+		"p2p_ipv4_pool": info["p2p_ipv4_pool"]
 	}
 	
 	with open('./templates/allyml.j2') as f:

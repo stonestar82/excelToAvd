@@ -1,5 +1,35 @@
 {# Ethernet Interfaces #}
-{% include 'eos/ethernet-interfaces.j2' %}
+{# eos - Ethernet Interfaces #}
+{% for ethernet_interface in ethernet_interfaces | arista.avd.convert_dicts('name') | arista.avd.natural_sort('name') %}
+!
+interface {{ ethernet_interface.name }}
+{%    if ethernet_interface.type is arista.avd.defined('routed') %}
+   no switchport
+{%    endif%}
+{%    if ethernet_interface.mode is arista.avd.defined %}
+   switchport mode {{ ethernet_interface.mode }}
+{%    endif %}
+{%    if ethernet_interface.ip_address is arista.avd.defined  %}
+{%      set tmp_ip = p2p_ipv4_pool.split('.')       %}
+{%      set subnet = p2p_ipv4_pool.split('/')[1]%}
+{%      set ip2 = tmp_ip[1] | int%}
+{%      set etheret_id = ethernet_interface.name | regex_findall("\d") | join | int%}
+{%      if ethernet_interfaces["Ethernet1"]["peer_type"] == "l3leaf" %}{# spine #}
+{%        set ip2 = ip2 + switch_id%}
+{%        set ip = tmp_ip[0] ~ "." ~ ip2 ~ "." ~ etheret_id ~ ".1/" ~ subnet         %}
+{%      else  %}
+{%        if ethernet_interface.peer_type == "spine" %}
+{%          set ip2 = ip2 + etheret_id%}
+{%          set ip = tmp_ip[0] ~ "." ~ ip2 ~ "." ~ switch_id ~ ".2/" ~ subnet         %}
+{%        else%}
+{%          set ip = tmp_ip[0] ~ "." ~ ip2 ~ "." ~ switch_id ~ ".2/" ~ subnet         %}
+{%        endif%}
+{%      endif%}
+   ip address {{ ip }}
+{%    endif%}
+{% endfor %}
+{# Port-Channel Interfaces #}
+{% include 'eos/port-channel-interfaces.j2' %}
 {# VLANs #}
 {% include 'eos/vlans.j2' %}
 {# VLAN Interfaces #}

@@ -1,5 +1,5 @@
 router_bgp:
-  as: '65104'
+  as: '65004'
   router_id: 1.1.1.4
   bgp_defaults:
   - no bgp default ipv4-unicast
@@ -11,42 +11,48 @@ router_bgp:
       send_community: all
       bgp_listen_range_prefix: 100.64.0.0/10
       peer_filter: Leaf-Ass
-    OVERLAY:
+      remote_as: '65000'
+    EVPN:
       type: evpn
       update_source: Loopback0
       bfd: true
       ebgp_multihop: '3'
       send_community: all
       maximum_routes: 0
+      bgp_listen_range_prefix: 1.1.1.0/24
+      peer_filter: Leaf-Ass
+      remote_as: '65000'
   address_family_ipv4:
     peer_groups:
       UNDERLAY:
         activate: true
-      OVERLAY:
+      EVPN:
         activate: false
   redistribute_routes:
     connected:
       route_map: RM-CONN-2-BGP
   neighbors:
-    172.21.1.12:
+    100.100.0.12:
       peer_group: UNDERLAY
+      type: ipv4
       remote_as: '65000'
-      description: Spine-01_Ethernet4
-    172.21.1.14:
+      description: Spine-01
+    100.100.0.14:
       peer_group: UNDERLAY
+      type: ipv4
       remote_as: '65000'
-      description: Spine-02_Ethernet4
+      description: Spine-02
     1.1.1.201:
-      peer_group: OVERLAY
+      peer_group: EVPN
       description: Spine-01
       remote_as: '65000'
     1.1.1.202:
-      peer_group: OVERLAY
+      peer_group: EVPN
       description: Spine-02
       remote_as: '65000'
   address_family_evpn:
     peer_groups:
-      OVERLAY:
+      EVPN:
         activate: true
 static_routes:
 - vrf: MGMT
@@ -90,6 +96,8 @@ management_api_http:
   enable_vrfs:
     MGMT: {}
   enable_https: true
+p2p_ipv4_pool: 100.100.0.0/30
+switch_id: 4
 ethernet_interfaces:
   Ethernet1:
     peer: Spine-01
@@ -99,7 +107,7 @@ ethernet_interfaces:
     mtu: 1500
     type: routed
     shutdown: false
-    ip_address: 172.21.1.13/31
+    ip_address: 100.100.0.13/31
   Ethernet2:
     peer: Spine-02
     peer_interface: Ethernet4
@@ -108,7 +116,7 @@ ethernet_interfaces:
     mtu: 1500
     type: routed
     shutdown: false
-    ip_address: 172.21.1.15/31
+    ip_address: 100.100.0.15/31
   Ethernet3:
     peer: Shared
     peer_interface: Eth1
@@ -125,7 +133,16 @@ loopback_interfaces:
   Loopback1:
     description: VTEP_VXLAN_Tunnel_Source
     shutdown: false
-    ip_address: 192.168.254.4/32
+    ip_address: 2.2.2.4/32
+prefix_lists:
+- name: Loopback
+  sequence_numbers:
+  - sequence: 10
+    action: permit 1.1.1.0/24 eq 32
+- name: Loopback
+  sequence_numbers:
+  - sequence: 20
+    action: permit 2.2.2.0/24 eq 32
 router_bfd:
   multihop:
     interval: 1200
@@ -136,7 +153,7 @@ ip_igmp_snooping:
 ip_virtual_router_mac_address: 00:1c:73:00:dc:01
 vxlan_interface:
   Vxlan1:
-    description: Leaf-04_VTEP
+    description: VTEP
     vxlan:
       source_interface: Loopback1
       udp_port: 4789

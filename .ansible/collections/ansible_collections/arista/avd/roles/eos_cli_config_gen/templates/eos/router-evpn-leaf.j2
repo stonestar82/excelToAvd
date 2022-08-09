@@ -1,25 +1,26 @@
 {# eos - Router BGP #}
+{% set peerGroupName = ""%}
 {% if router_bgp.as is arista.avd.defined %}
 !
 router bgp {{ router_bgp.as }}
-   bgp asn notation asdot
-{%     if router_bgp.router_id is arista.avd.defined %}
-   router-id {{ router_bgp.router_id }}
-{%     endif %}
-{%     if router_bgp.maximum_paths.paths is arista.avd.defined %}
-{%         set paths_cli = "maximum-paths " ~ router_bgp.maximum_paths.paths %}
-{%         if router_bgp.maximum_paths.ecmp is arista.avd.defined %}
-{%             set paths_cli = paths_cli ~ " ecmp " ~ router_bgp.maximum_paths.ecmp %}
-{%         endif %}
-   {{ paths_cli }}
-{%     endif %}
-{%     for bgp_default in router_bgp.bgp_defaults | arista.avd.default([]) %}
-   {{ bgp_default }}
-{%     endfor %}
 {%     for peer_group in router_bgp.peer_groups | arista.avd.convert_dicts('name') | arista.avd.natural_sort('name') %}
-{%           if peer_group.type == "ipv4" %}
+{%         if peer_group.type == "evpn"    %}
    neighbor {{ peer_group.name }} peer group
+{%             if peer_group.next_hop_unchanged is arista.avd.defined(true) %}
+   neighbor EVPN next-hop-unchanged
+{%             endif %}
+{%             if peer_group.update_source is arista.avd.defined %}
+   neighbor {{ peer_group.name }} update-source {{ peer_group.update_source }}
+{%             endif %}
+{%             if peer_group.bfd is arista.avd.defined(true) %}
+   neighbor EVPN bfd
+{%             endif %}
+{%             if peer_group.ebgp_multihop is arista.avd.defined %}
+   neighbor {{ peer_group.name }} ebgp-multihop {{ peer_group.ebgp_multihop }}
+{%             endif %}
+{%             if peer_group.send_community is arista.avd.defined %}
    neighbor {{ peer_group.name }} send-community
+{%             endif %}
 {%             if peer_group.remote_as is arista.avd.defined %}
    neighbor {{ peer_group.name }} remote-as {{ peer_group.remote_as }}
 {%             endif %}
@@ -27,10 +28,14 @@ router bgp {{ router_bgp.as }}
 {%             set maximum_routes_cli = "neighbor " ~ peer_group.name ~ " maximum-routes " ~ peer_group.maximum_routes %}
    {{ maximum_routes_cli }}
 {%             endif %}
-{%           endif %}
+   !
+   address-family evpn
+      neighbor {{ peer_group.name }} activate
+{%         endif %}
 {%     endfor %}
 {%     for neighbor in router_bgp.neighbors | arista.avd.convert_dicts('ip_address') | arista.avd.natural_sort('ip_address') %}
 {%         if neighbor.type is arista.avd.defined("ipv4")%}
+{%         else%}
 {%             if neighbor.peer_group is arista.avd.defined %}
    neighbor {{ neighbor.ip_address }} peer group {{ neighbor.peer_group }}
 {%             endif %}
@@ -39,16 +44,5 @@ router bgp {{ router_bgp.as }}
 {%             endif %}
 {%         endif %}
 {%     endfor %}
-   redistribute connected route-map Loopback
 {# address family ipv4 activation #}
-{%     if router_bgp.address_family_ipv4 is arista.avd.defined %}
-   !
-   address-family ipv4
-{%         for peer_group in router_bgp.address_family_ipv4.peer_groups | arista.avd.convert_dicts('name') | arista.avd.natural_sort('name') %}
-{%             if peer_group.activate is arista.avd.defined(true) %}
-      neighbor {{ peer_group.name }} activate
-{%             endif %}
-{%         endfor %}
-{%     endif %}
-
 {% endif %}

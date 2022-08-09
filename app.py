@@ -27,7 +27,7 @@ def index():
   return render_template('switchList.html', switchList=switchList)
 
 
-@app.route("/read/<switch>")
+@app.route("/cfgs/<switch>")
 def read(switch): 
 
   try:
@@ -40,16 +40,14 @@ def read(switch):
 
 
 @app.route("/cfg/input")
-def configInput(): 
-
-
+def configInput():
   return render_template('configInput.html')
 
 @app.route("/cfg/upload", methods = ['POST'])
 def configUpload(): 
 
   f = request.files["cfg_file"]
-  f.save(secure_filename(f.filename))
+  f.save("./inventory/upload/" + secure_filename(f.filename))
 
   return "파일이 저장되었습니다."
 

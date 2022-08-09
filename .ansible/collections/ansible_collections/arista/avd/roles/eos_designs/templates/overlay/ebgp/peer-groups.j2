@@ -9,6 +9,18 @@
 {% endif %}
       send_community: all
       maximum_routes: 0
+{##### bgp listen range prefix 추가 #####}
+{% if switch.bgp_peer_groups.evpn_overlay_peers.bgp_listen_range_prefix is arista.avd.defined %}
+      bgp_listen_range_prefix: "{{ switch.bgp_peer_groups.evpn_overlay_peers.bgp_listen_range_prefix }}"
+{% endif %}
+{##### peer filter 추가 #####}
+{% if switch.bgp_peer_groups.evpn_overlay_peers.peer_filter is arista.avd.defined %}
+      peer_filter: "{{ switch.bgp_peer_groups.evpn_overlay_peers.peer_filter }}"
+{% endif %}  
+{##### remote as 추가 #####}
+{% if switch.bgp_peer_groups.evpn_overlay_peers.remote_as is arista.avd.defined %}
+      remote_as: "{{ switch.bgp_peer_groups.evpn_overlay_peers.remote_as }}"
+{% endif %}
 {% if switch.evpn_role == "server" %}
       next_hop_unchanged: true
 {% endif %}

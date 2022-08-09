@@ -1,0 +1,7 @@
+{# router bgp configuration #}
+{# eos - Router BGP #}
+{% if ethernet_interfaces["Ethernet1"]["peer_type"] == "l3leaf" %}{# spine #}
+{% include 'eos/router-evpn-spine.j2' %}
+{% else %}{# leaf #}
+{% include 'eos/router-evpn-leaf.j2' %}
+{% endif %}

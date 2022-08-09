@@ -2,7 +2,7 @@
 
 ## terminal length
 terminal:
-  length: 40
+  length: 500
   width: 200
 
 ## spanning-tree mode mstp
@@ -28,3 +28,6 @@ banners:
 ## BGP maximum path & ecmp
 bgp_maximum_paths: 8
 bgp_ecmp: 8
+
+## p2p ipv4 pool - ethernet ip
+p2p_ipv4_pool: 100.100.0.0/30

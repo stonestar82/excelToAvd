@@ -57,24 +57,24 @@
 
 | Uplink IPv4 Pool | Available Addresses | Assigned addresses | Assigned Address % |
 | ---------------- | ------------------- | ------------------ | ------------------ |
-| 172.21.1.0/24 | 256 | 24 | 9.38 % |
+| 100.100.0.0/30 | 4 | 4 | 100.0 % |
 
 ## Point-To-Point Links Node Allocation
 
 | Node | Node Interface | Node IP Address | Peer Node | Peer Interface | Peer IP Address |
 | ---- | -------------- | --------------- | --------- | -------------- | --------------- |
-| BL-01 | Ethernet1 | 172.21.1.17/31 | Spine-01 | Ethernet5 | 172.21.1.16/31 |
-| BL-01 | Ethernet2 | 172.21.1.19/31 | Spine-02 | Ethernet5 | 172.21.1.18/31 |
-| BL-02 | Ethernet1 | 172.21.1.21/31 | Spine-01 | Ethernet6 | 172.21.1.20/31 |
-| BL-02 | Ethernet2 | 172.21.1.23/31 | Spine-02 | Ethernet6 | 172.21.1.22/31 |
-| Leaf-01 | Ethernet1 | 172.21.1.1/31 | Spine-01 | Ethernet1 | 172.21.1.0/31 |
-| Leaf-01 | Ethernet2 | 172.21.1.3/31 | Spine-02 | Ethernet1 | 172.21.1.2/31 |
-| Leaf-02 | Ethernet1 | 172.21.1.5/31 | Spine-01 | Ethernet2 | 172.21.1.4/31 |
-| Leaf-02 | Ethernet2 | 172.21.1.7/31 | Spine-02 | Ethernet2 | 172.21.1.6/31 |
-| Leaf-03 | Ethernet1 | 172.21.1.9/31 | Spine-01 | Ethernet3 | 172.21.1.8/31 |
-| Leaf-03 | Ethernet2 | 172.21.1.11/31 | Spine-02 | Ethernet3 | 172.21.1.10/31 |
-| Leaf-04 | Ethernet1 | 172.21.1.13/31 | Spine-01 | Ethernet4 | 172.21.1.12/31 |
-| Leaf-04 | Ethernet2 | 172.21.1.15/31 | Spine-02 | Ethernet4 | 172.21.1.14/31 |
+| BL-01 | Ethernet1 | 100.100.0.17/31 | Spine-01 | Ethernet5 | 100.100.0.16/31 |
+| BL-01 | Ethernet2 | 100.100.0.19/31 | Spine-02 | Ethernet5 | 100.100.0.18/31 |
+| BL-02 | Ethernet1 | 100.100.0.21/31 | Spine-01 | Ethernet6 | 100.100.0.20/31 |
+| BL-02 | Ethernet2 | 100.100.0.23/31 | Spine-02 | Ethernet6 | 100.100.0.22/31 |
+| Leaf-01 | Ethernet1 | 100.100.0.1/31 | Spine-01 | Ethernet1 | 100.100.0.0/31 |
+| Leaf-01 | Ethernet2 | 100.100.0.3/31 | Spine-02 | Ethernet1 | 100.100.0.2/31 |
+| Leaf-02 | Ethernet1 | 100.100.0.5/31 | Spine-01 | Ethernet2 | 100.100.0.4/31 |
+| Leaf-02 | Ethernet2 | 100.100.0.7/31 | Spine-02 | Ethernet2 | 100.100.0.6/31 |
+| Leaf-03 | Ethernet1 | 100.100.0.9/31 | Spine-01 | Ethernet3 | 100.100.0.8/31 |
+| Leaf-03 | Ethernet2 | 100.100.0.11/31 | Spine-02 | Ethernet3 | 100.100.0.10/31 |
+| Leaf-04 | Ethernet1 | 100.100.0.13/31 | Spine-01 | Ethernet4 | 100.100.0.12/31 |
+| Leaf-04 | Ethernet2 | 100.100.0.15/31 | Spine-02 | Ethernet4 | 100.100.0.14/31 |
 
 ## Loopback Interfaces (BGP EVPN Peering)
 
@@ -100,15 +100,15 @@
 
 | VTEP Loopback Pool | Available Addresses | Assigned addresses | Assigned Address % |
 | --------------------- | ------------------- | ------------------ | ------------------ |
-| 192.168.254.0/24 | 256 | 6 | 2.35 % |
+| 2.2.2.0/24 | 256 | 6 | 2.35 % |
 
 ## VTEP Loopback Node allocation
 
 | POD | Node | Loopback1 |
 | --- | ---- | --------- |
-| DC1_FABRIC | BL-01 | 192.168.254.5/32 |
-| DC1_FABRIC | BL-02 | 192.168.254.5/32 |
-| DC1_FABRIC | Leaf-01 | 192.168.254.1/32 |
-| DC1_FABRIC | Leaf-02 | 192.168.254.2/32 |
-| DC1_FABRIC | Leaf-03 | 192.168.254.3/32 |
-| DC1_FABRIC | Leaf-04 | 192.168.254.4/32 |
+| DC1_FABRIC | BL-01 | 2.2.2.5/32 |
+| DC1_FABRIC | BL-02 | 2.2.2.5/32 |
+| DC1_FABRIC | Leaf-01 | 2.2.2.1/32 |
+| DC1_FABRIC | Leaf-02 | 2.2.2.2/32 |
+| DC1_FABRIC | Leaf-03 | 2.2.2.3/32 |
+| DC1_FABRIC | Leaf-04 | 2.2.2.4/32 |

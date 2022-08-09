@@ -15,6 +15,10 @@ router_bgp:
 {% if switch.bgp_peer_groups.ipv4_underlay_peers.peer_filter is arista.avd.defined() %}
       peer_filter: "{{ switch.bgp_peer_groups.ipv4_underlay_peers.peer_filter }}"
 {% endif %}  
+{##### remote as 추가 #####}
+{% if switch.bgp_peer_groups.ipv4_underlay_peers.remote_as is arista.avd.defined() %}
+      remote_as: "{{ switch.bgp_peer_groups.ipv4_underlay_peers.remote_as }}"
+{% endif %}
   address_family_ipv4:
     peer_groups:
       {{ switch.bgp_peer_groups.ipv4_underlay_peers.name }}:
@@ -45,12 +49,15 @@ router_bgp:
 
 {% else %}
 {# Regular EBGP peerings #}
+{# type:  ipv4추가, description 변경 #}
   neighbors:
 {%     for link in underlay_data.links | arista.avd.natural_sort('interface') if link.type is arista.avd.defined('underlay_p2p') %}
     {{ link.peer_ip_address }}:
       peer_group: {{ switch.bgp_peer_groups.ipv4_underlay_peers.name }}
+      type: ipv4
       remote_as: "{{ link.peer_bgp_as }}"
-      description: {{ link.peer }}_{{ link.peer_interface }}
+{#      description: {{ link.peer }}_{{ link.peer_interface }} #}
+      description: {{ link.peer }}
 {%         if link.bfd is arista.avd.defined %}
       bfd: {{ link.bfd }}
 {%         endif %}

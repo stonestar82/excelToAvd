@@ -1,7 +1,8 @@
 vxlan_interface:
 {# vxlan-vtep interface #}
   Vxlan1:
-    description: {{ inventory_hostname }}_VTEP
+{#    description: {{ inventory_hostname }}_VTEP #}
+    description: VTEP
     vxlan:
       source_interface: {{ switch.vtep_loopback }}
 {% if switch.mlag is arista.avd.defined(true) %}

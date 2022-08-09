@@ -4,8 +4,6 @@
 {% include 'eos/service-routing-protocols-model.j2' %}
 {# logging #}
 {% include 'eos/logging.j2' %}
-{# hostname #}
-{% include 'eos/hostname.j2' %}
 {# spanning-tree #}
 {% if spanning_tree is arista.avd.defined %}
 !
@@ -13,8 +11,8 @@
 spanning-tree mode {{ spanning_tree.mode }}
 {%     endif %}
 {% endif %}
-{# aaa root #}
-{% include 'eos/aaa-root.j2' %}
+!
+aaa authorization exec default local none
 {# users #}
 {% if local_users is arista.avd.defined %}
 {%     for local_user in local_users | arista.avd.convert_dicts('name') | arista.avd.natural_sort('name') %}
@@ -39,14 +37,24 @@ spanning-tree mode {{ spanning_tree.mode }}
 {# clock #}
 {% include 'eos/clock.j2' %}
 {# VRF Instances #}
-{#% include 'eos/vrf-instances.j2' %#}
+{% include 'eos/vrf-instances.j2' %}
 {# Management Interfaces #}
 {#% include 'eos/management-interfaces.j2' %#}
 {# IP Routing #}
-{#% include 'eos/ip-routing.j2' %#}
+{% include 'eos/ip-routing.j2' %}
 {# Static Route #}
-{#% include 'eos/static-routes.j2' %#}
+{% include 'eos/static-routes.j2' %}
 {# banner #}
 {% include 'eos/banners.j2' %}
+! EVE-NG 사용시 bfd 타이머 조정, BGP peer가 많고 table 많을경우도 
+!
+router bfd
+   interval 1200 min-rx 1200 multiplier 3 default
+!
+! 개인적인 스크립트 사용
+alias gt bash python /mnt/flash/min-20.06.17.py %1
+!
+management api http-commands
+   no shutdown
 !
 end

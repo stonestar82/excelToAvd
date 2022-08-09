@@ -1,0 +1,8 @@
+{
+  "url": "http://192.168.22.251",
+  "spineCount": 2,
+  "leafCount": 6,
+  "dhcpListPath": "dhcp.leases",
+  "ansibleId": "ansible",
+  "ansiblePw": "ansible"
+}
