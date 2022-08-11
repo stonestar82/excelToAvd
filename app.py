@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory, render_template, request
+from flask import Flask, send_from_directory, render_template, request, Response
 import os
 from werkzeug.utils import secure_filename
 
@@ -42,10 +42,11 @@ def cfgs(switch):
   try:
     with open('./inventory/intended/configs/' + secure_filename(switch) + '.cfg', encoding="UTF-8") as f:
       cfg = f.readlines()
+      return "\n".join(cfg)
   except FileNotFoundError:
-      cfg = ["설정파일이 없습니다."]
+      return Response("", status=404, mimetype='application/json')
 
-  return "\n".join(cfg)
+  
 
 @app.route("/cfg/input")
 def configInput():

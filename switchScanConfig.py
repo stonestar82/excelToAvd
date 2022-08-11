@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from ast import Raise
 from src.process.SwitchIdentification import SwitchIdentification
 from src.domain.Switch import Switch
 import json
@@ -25,9 +26,9 @@ def main():
   # print(url, totalLeafCount, totalSpineCount, dhcpListPath, "|", ansibleId, ansiblePw)
 
   ##### dhcp 추출 S #####
-  taskPrint("TASK [Start]")
+  taskPrint("TASK [작업시작]")
 
-  taskPrint("TASK [DHCP scan]")
+  taskPrint("TASK [DHCP 확인]")
   with open(dhcpListPath, "r") as f:
     now = datetime.now()
     scanSwitches = []
@@ -59,41 +60,50 @@ def main():
   # tmpSwitch = ["192.168.22.240", "192.168.22.241", "192.168.22.243", "192.168.22.244", "192.168.22.245", "192.168.22.246"]
 
   ##### lldp 로 spine leaf 체크 S #####
-  taskPrint("TASK [LLDP scan]")
-
-  for item in scanSwitches:
+  switchBootCheck = False
+  taskPrint("TASK [Swicth 부팅 체크]")
+  try:
+    for item in scanSwitches:
       
-    switch = Switch(item["ip"], "50:fa:80:e9:68:cf", "arista_eos")
+      switch = Switch(item["ip"], "50:fa:80:e9:68:cf", "arista_eos")
 
-    switch.user = ansibleId
-    switch.password = ansiblePw   
+      switch.user = ansibleId
+      switch.password = ansiblePw   
 
-    switchId = SwitchIdentification(switch)
-    switchId.switchConnect()
-    switchId.lldpScan()
-    switchId.identification(totalLeafCount)
-    switchId.disconnect()
-    item.update(dict([("hostname", switchId.switch.hostname)]))
+      switchId = SwitchIdentification(switch)
+      switchId.switchConnect()
+      switchId.lldpScan()
+      switchId.identification(totalLeafCount)
+      item.update(dict([("hostname", switchId.switch.hostname)]))      
+      switchId.configDownload(url, switchId.switch.hostname)
+      switchId.disconnect()
+      
 
-    if eq("spine", switchId.switch.type):
-      spines.append(switchId.switch.hostname)
+      if eq("spine", switchId.switch.type):
+        spines.append(switchId.switch.hostname)
+      else:
+        leafs.append(switchId.switch.hostname)
+
+    if eq(totalLeafCount, len(leafs)) and eq(totalSpineCount, len(spines)):
+      print("Spine, Leaf 확인 완료")
+      spines.sort()
+      leafs.sort()
+
+      print("Spine -----------------")
+      for s in spines:
+        print(s)
+      
+      print("Leaf -----------------")
+      for s in leafs:
+        print(s)
     else:
-      leafs.append(switchId.switch.hostname)
+      print("Spine, Leaf 설정과 불일치")
+        
+  except Exception as e:
+    print("모든 스위치가 부팅되지 않았습니다.")
+      
 
-  if eq(totalLeafCount, len(leafs)) and eq(totalSpineCount, len(spines)):
-    print("Spine, Leaf 확인 완료")
-    spines.sort()
-    leafs.sort()
-
-    print("Spine -----------------")
-    for s in spines:
-      print(s)
-    
-    print("Leaf -----------------")
-    for s in leafs:
-      print(s)
-  else:
-    print("Spine, Leaf 설정과 불일치")
+  
 
   ##### lldp 로 spine leaf 체크 E #####
   taskPrint("TASK [End]")

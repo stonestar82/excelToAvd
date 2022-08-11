@@ -69,10 +69,6 @@ def main():
 
     switchId = SwitchIdentification(switch)
     switchId.switchConnect()
-    switchId.lldpScan()
-    switchId.identification(totalLeafCount)
-    print("ip = ", item["ip"], switchId.switch.hostname)
-    switchId.configDownload(url, switchId.switch.hostname)
     switchId.reboot()
     switchId.disconnect()
 

@@ -1,7 +1,10 @@
+from ast import Raise
 from src.domain.Switch import *
 from netmiko import ConnectHandler
 from operator import eq, ne
 import json
+from urllib.request import urlopen
+from urllib.error import URLError, HTTPError
 
 class SwitchIdentification():
 
@@ -62,6 +65,18 @@ class SwitchIdentification():
 
   ## config 다운로드
   def configDownload(self, url, fileName):
+    
+    ## config 파일 다운로드전 체크
+    try:
+      res = urlopen(url + "/cfgs/" + fileName)
+      # print(res.status)
+    except HTTPError as e:
+      err = e.read()
+      code = e.getcode()    
+      print("config 파일이 없습니다.") ## 404
+      print(url + "/cfgs/" + fileName) ## 404
+      exit()
+      
     self.connect.send_command("bash sudo wget " + url + "/cfgs/" + fileName + " -O /mnt/flash/startup-config")
     # self.connect.send_command("bash sudo mv " + fileName + " /mnt/flash/startup-config")
     # self.connect.send_command("wr")
