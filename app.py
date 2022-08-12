@@ -1,4 +1,4 @@
-from flask import Flask, send_from_directory, render_template, request, Response
+from flask import Flask, render_template, request, Response
 import os
 from werkzeug.utils import secure_filename
 
@@ -11,20 +11,9 @@ log.setLevel(logging.ERROR)
 @app.route("/")
 def index():
 
-  # POST (JSON)
-  # url = "http://123.215.15.157/api/auth/login"
-  # headers = {'Content-Type': 'application/json; chearset=utf-8'}
-  # data = {'username': 'pks', 'password': 'rkqtn!23'}
-  # res = requests.post(url, data=json.dumps(data), headers=headers)
-
-  # loginResponse = res.json()
-  
-  # return render_template('index.html', loginState=loginResponse)
-
   switchList = os.listdir("./inventory/intended/configs/", )
   
   return render_template('switchList.html', switchList=switchList)
-
 
 @app.route("/switch/<switch>")
 def read(switch): 
@@ -61,4 +50,13 @@ def configUpload():
   return "파일이 저장되었습니다."
 
 if __name__ == "__main__":
-  app.run(host='0.0.0.0', port=80) 
+  app.run(host='0.0.0.0', port=80)
+  
+@app.route("/bootstrap")
+def bootstrap():
+
+  with open('./bootstrap.py', encoding="UTF-8") as f:
+    boot = f.readlines()
+    return "\n".join(boot)
+    
+  return ""
