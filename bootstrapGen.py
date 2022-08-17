@@ -11,8 +11,7 @@ def bootstrapFirstBootPythonCreate():
 
 	url = config["url"]
 		
-	t = """
-#!/usr/bin/env python
+	t = """#!/usr/bin/env python
 import requests
 from EapiClientLib import EapiClient
 from string import Template
