@@ -1,6 +1,7 @@
 from ast import Raise
 from src.domain.Switch import *
 from netmiko import ConnectHandler
+from netmiko import SSHDetect
 from operator import eq, ne
 import json
 from urllib.request import urlopen
@@ -13,12 +14,21 @@ class SwitchIdentification():
 
   ## 스위치에 접속
   def switchConnect(self):
-    self.connect = ConnectHandler(
-      device_type = self.switch.deviceType,
-      host = self.switch.ip,
-      username = self.switch.user,
-      password = self.switch.password
-    )
+    reomote = {
+      "device_type": "autodetect",
+      "host": self.switch.ip,
+      "username": self.switch.user,
+      "password": self.switch.password
+    }
+    
+    guesser = SSHDetect(**reomote)
+    best_match = guesser.autodetect()
+
+    print(best_match)
+    
+    self.connect = ConnectHandler(**reomote)
+    
+    print("ip = ", self.switch.ip)
 
     self.connect.enable()
   
@@ -69,16 +79,23 @@ class SwitchIdentification():
     ## config 파일 다운로드전 체크
     try:
       res = urlopen(url + "/cfgs/" + fileName)
-      # print(res.status)
+      print(res.status)
     except HTTPError as e:
       err = e.read()
       code = e.getcode()    
       print("config 파일이 없습니다.") ## 404
       print(url + "/cfgs/" + fileName) ## 404
       exit()
-      
+    
+    cmd1 = "cli vrf MGMT"
+    cmd2 = "bash sudo wget " + url + "/cfgs/" + fileName + " -O /mnt/flash/startup-config"
+    cmd = []
+    # cmd.append(cmd1)
+    # cmd.append(cmd2)
+    
+    # self.connect.send_command()
+    # self.connect.send_config_set(cmd)
     self.connect.send_command("bash sudo wget " + url + "/cfgs/" + fileName + " -O /mnt/flash/startup-config")
-    # self.connect.send_command("bash sudo mv " + fileName + " /mnt/flash/startup-config")
     # self.connect.send_command("wr")
 
     print("bash sudo wget " + url + "/cfgs/" + fileName + " -O /mnt/flash/startup-config")

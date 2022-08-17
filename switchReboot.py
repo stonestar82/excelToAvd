@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 #!/usr/bin/env python
-from ast import Raise
-import json, collections, pprint
-from operator import ne, eq
-from datetime import datetime, timedelta
+import json
 from netmiko import ConnectHandler
-from urllib.error import URLError, HTTPError
-from urllib.request import urlopen
 
 def taskPrint(task):
   task = task + " "
@@ -21,7 +16,7 @@ def main():
   ansiblePw = config["ansiblePw"]
   
   ##### Swtich 재부팅 S #####
-  taskPrint("TASK [Defined Spine 검색]")
+  taskPrint("TASK [Swtich 재부팅]")
   with open("./upload/123456789", "r") as f:
     switchs = f.readlines()
     f.close()

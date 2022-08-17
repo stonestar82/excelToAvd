@@ -7,6 +7,7 @@ from generators.generateGroupVarsServers import generateGroupVarsServers
 from generators.envirmentVariables import *
 from jinja2 import Template
 from generators.BlankNone import BlankNone
+import bootstrapGen
 
 import argparse
 
@@ -135,6 +136,8 @@ def main():
 
 	with open("./deploy.yml", "w") as reqs:
 			reqs.write(template.render(**data))
+
+	bootstrapGen.bootstrapFirstBootPythonCreate()
 
 	# taskPrint("TASK [deploy.yml PlayBook Exec]")
 	# os.system("ansible-playbook deploy.yml")

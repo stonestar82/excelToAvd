@@ -4,5 +4,6 @@
   "leafCount": 6,
   "dhcpListPath": "dhcp.leases",
   "ansibleId": "ansible",
-  "ansiblePw": "ansible"
+  "ansiblePw": "ansible",
+  "definedSpineSysmac": "50:db:cf:76:7a:78"
 }

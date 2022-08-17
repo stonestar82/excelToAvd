@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, Response
-import os
+import os, json
+from operator import eq
 from werkzeug.utils import secure_filename
+from openpyxl import load_workbook
 
 app = Flask(__name__, template_folder="static/templates")
 
@@ -45,18 +47,55 @@ def configInput():
 def configUpload(): 
 
   f = request.files["cfg_file"]
-  f.save("/avd/upload/" + secure_filename(f.filename))
+  f.save("./upload/" + secure_filename(f.filename))
 
   return "파일이 저장되었습니다."
 
-if __name__ == "__main__":
-  app.run(host='0.0.0.0', port=80)
   
 @app.route("/bootstrap")
 def bootstrap():
-
-  with open('./bootstrap.py', encoding="UTF-8") as f:
+  
+  boot = ""
+  with open('./bootstrap', encoding="utf-8") as f:
     boot = f.readlines()
-    return "\n".join(boot)
+  
+  return "\n".join(boot)
+
+
+@app.route("/bootstrap/requestip/<bootseq>/<sysmac>/<serial>")
+def requestip(bootseq, sysmac, serial):
+  
+  excel = load_workbook(filename="./ip.xlsx", read_only=False, data_only=True)
+  sheetIp = excel["ip"]
+
+  ip = ""
+  ipExsist = False
+  for row in range(2, sheetIp.max_row + 1):
+    v, s = sheetIp.cell(row,1).value, sheetIp.cell(row,2).value
+    if eq("X", s):
+      ip = v
+      ipExsist = True
+      sheetIp.cell(row, 2, "O")
+      sheetIp.cell(row, 3, sysmac)
+      sheetIp.cell(row, 4, serial)
+      excel.save("./ip.xlsx")
+      break;
     
-  return ""
+  if ipExsist:
+    
+    if not os.path.exists("./upload/" + bootseq):
+      with open("./upload/" + bootseq, "w") as f:
+        f.write(ip + "|" + sysmac+ "|" + serial  + "\n")
+        f.close()            
+    else:
+      with open("./upload/" + bootseq, "at", encoding="utf-8") as f:
+        f.write(ip + "|" + sysmac + "|" + serial + "\n")
+        f.close()
+        
+  else:
+    ip = ""
+    
+  return ip
+
+if __name__ == "__main__":
+  app.run(host='0.0.0.0', port=80)

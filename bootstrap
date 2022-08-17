@@ -1,0 +1,51 @@
+
+#!/usr/bin/env python
+import requests
+from EapiClientLib import EapiClient
+from string import Template
+from datetime import datetime
+
+t = """
+!
+logging buffered 1000
+logging console informational
+logging monitor informational
+logging synchronous level all
+!
+username ${ansible} secret ${ansible_pw} privilege 15
+!
+ip routing
+!
+interface Management1
+	description oob_management
+	no shutdown
+	ip address ${ip}/24
+!
+ip route 0.0.0.0/0 ${gateway}.1
+"""
+
+switch = EapiClient(disableAaa=True, privLevel=15)
+
+cli_command = "sh version | json"
+result = switch.runCmds( 1, [cli_command])
+data = result["result"][0]
+sysmac = data["systemMacAddress"]
+serial = data["serialNumber"]
+
+requestUrl = "http://172.16.14.72/bootstrap/202208171129/" + sysmac + "/" + serial
+
+response = requests.get(requestUrl)
+ip = response.text
+
+tmp_ip = ip.split(".")	
+gateway = tmp_ip[0] + "." + tmp_ip[1] + "." + tmp_ip[2]
+
+data = { "ansible" : "ansible", "ansible_pw": "ansible", "ip" : ip, "gateway": gateway }
+
+template = Template(t)
+
+with open("/mnt/flash/startup-config", "w") as reqs:
+	reqs.write(template.substitute(data))
+
+
+	

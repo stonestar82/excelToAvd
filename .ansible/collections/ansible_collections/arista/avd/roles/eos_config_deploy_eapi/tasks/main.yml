@@ -33,7 +33,7 @@
       dir_path: "{{ pre_running_config_backup_dir }}"
   notify: "backup config"
 
-- name: init(or rollback) cfg 배포
+- name: init cfg 배포
   eos_config:
     src: "{{ eos_config_dir }}/{{ inventory_hostname }}.cfg"
     replace: config
@@ -43,7 +43,31 @@
       filename: "init_{{ pre_running_config_backup_filename }}"
       dir_path: "{{ pre_running_config_backup_dir }}"
   notify: "backup config"
-  tags: [init, rollback]
+  tags: [init]
+
+- name: rollback cfg 배포
+  eos_config:
+    src: "{{ eos_config_dir }}/{{ inventory_hostname }}.cfg"
+    replace: config
+    save_when: modified
+    backup: "{{ eos_config_deploy_eapi_pre_running_config_backup }}"
+    backup_options:
+      filename: "rollback_{{ pre_running_config_backup_filename }}"
+      dir_path: "{{ pre_running_config_backup_dir }}"
+  notify: "backup config"
+  tags: [rollback]
+
+- name: full cfg 배포
+  eos_config:
+    src: "{{ eos_config_dir }}/{{ inventory_hostname }}.cfg"
+    replace: config
+    save_when: modified
+    backup: "{{ eos_config_deploy_eapi_pre_running_config_backup }}"
+    backup_options:
+      filename: "full_{{ pre_running_config_backup_filename }}"
+      dir_path: "{{ pre_running_config_backup_dir }}"
+  notify: "backup config"
+  tags: [full]
 
 - name: P2P IP cfg 배포
   eos_config:
