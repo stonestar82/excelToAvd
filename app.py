@@ -61,6 +61,19 @@ def bootstrap():
   
   return "\n".join(boot)
 
+@app.route("/bootstrap/status")
+def requestStatus():
+  
+  excel = load_workbook(filename="./ip.xlsx", read_only=False, data_only=True)
+  sheetIp = excel["ip"]
+  
+  status = []
+  for row in range(2, sheetIp.max_row + 1):
+    v, s, mac, ser = sheetIp.cell(row,1).value, sheetIp.cell(row,2).value, sheetIp.cell(row,3).value, sheetIp.cell(row,4).value
+    d = { "ip": v, "status": s, "mac": mac, "serial": ser}
+    status.append(d)  
+    
+  return render_template('bootstrapStatus.html', status=status)
 
 @app.route("/bootstrap/requestip/<bootseq>/<sysmac>/<serial>")
 def requestip(bootseq, sysmac, serial):
@@ -96,6 +109,7 @@ def requestip(bootseq, sysmac, serial):
     ip = ""
     
   return ip
+
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=80)
